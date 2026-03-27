@@ -21,8 +21,24 @@ Módulos que ejecutan simulaciones de transporte de masa:
 ### 3. Capa de Visualización y CAD (`03_modelos_3d`)
 Integración con **Blender** mediante scripts de Python (`bpy`) para la generación de mallas 3D realistas, renderizado de alta fidelidad y preparación de archivos para bioimpresoras 3D.
 
-### 4. Capa de Interfaz y Control (`06_app`)
-Aplicaciones de escritorio desarrolladas en **PyQt6** que actúan como dashboards maestros para visualizar KPIs en tiempo real y realizar ajustes paramétricos.
+### 4. Capa de Interfaz y Control (`06_app` & `web_app`)
+- **Desktop:** Aplicaciones PyQt6 para dashboards locales de alta performance.
+- **Web Platform:** Dashboard estilo **V0 (Vercel)** diseñado para médicos e inversionistas, con persistencia en base de datos y métricas de sistema en tiempo real.
+
+---
+
+## 🐋 Docker y Despliegue
+El sistema está completamente dockerizado para facilitar su distribución en entornos clínicos o la nube.
+- **Construcción:** `docker-compose build`
+- **Ejecución:** `docker-compose up`
+- **API Endpoint:** `http://localhost:8000/api/simulate`
+- **Dashboard:** `http://localhost:8000/`
+
+---
+
+## 📊 Métricas y Logging
+- **Logging Multinivel:** Sistema avanzado mediante `Loguru` con trazas de auditoría en `web_app/logs/audit.log`.
+- **Persistencia:** Historial de simulaciones y métricas de performance almacenadas vía `SQLAlchemy`.
 
 ---
 

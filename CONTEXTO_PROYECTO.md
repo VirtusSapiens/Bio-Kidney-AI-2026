@@ -1,5 +1,5 @@
 # Informe de Contexto: BioKidney-AI
-**Fecha de generación:** 2026-03-26 20:34:53
+**Fecha de generación:** 2026-03-26 21:17:02
 **Estado del Sistema:** Pipeline 100% Completado (Hito Marzo 2026)
 
 ## 1. Estructura de Directorios
@@ -98,6 +98,7 @@
         scorecard_biokidney_ai_2026.pdf
     BLUEPRINT_INGENIERIA.md
     CONTEXTO_PROYECTO.md
+    Dockerfile
     README.md
     analizador_proyecto_biokidney.py
 biokidney/
@@ -108,14 +109,31 @@ biokidney/
             config.py
     experts/
             __init__.py
+            cellular.py
             fluids.py
             vascular.py
     utils/
             __init__.py
     biokidney_architect.py
+    docker-compose.yml
     inicio.sh
+    requirements.txt
 resultados/
         pareto_coswift.png
+web_app/
+    admin/
+    backend/
+        core/
+        database/
+                models.py
+            main.py
+        services/
+                simulation_service.py
+        utils/
+                logger.py
+    frontend/
+        components/
+            dashboard.html
 ```
 
 ## 2. Resumen de Componentes Clave
@@ -162,7 +180,7 @@ resultados/
 
 ### Archivo: `01_simuladores/simulador_oxigeno_biokidney.py`
 - **Tipo:** Script de Python
-- **Dependencias:** `from matplotlib.colors import LinearSegmentedColormap, from pathlib import Path, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np, import os, sys, time, warnings, import pandas as pd`
+- **Dependencias:** `from biokidney.core.config import cfg_physio, cfg_sim, cfg_vasc, from biokidney.experts.cellular import CellularExpert, from matplotlib.colors import LinearSegmentedColormap, from pathlib import Path, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np...`
 
 ---
 
@@ -387,6 +405,13 @@ resultados/
 
 ---
 
+### Archivo: `biokidney/experts/cellular.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from biokidney.core.config import cfg_physio, import numpy as np`
+- **Propósito:** Calcula el porcentaje de volumen en estado de hipoxia....
+
+---
+
 ### Archivo: `biokidney/experts/fluids.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `from biokidney.core.config import cfg_physio, cfg_sim, from typing import Tuple, List, import numpy as np`
@@ -410,6 +435,38 @@ resultados/
 - **Tipo:** Script de Python
 - **Dependencias:** `from datetime import datetime, from pathlib import Path, import logging, import os, import sys`
 - **Propósito:** Verifica si la base de conocimiento existe....
+
+---
+
+### Archivo: `requirements.txt`
+
+---
+
+### Archivo: `web_app/backend/database/models.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from datetime import datetime, from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, ForeignKey, create_engine, from sqlalchemy.ext.declarative import declarative_base, from sqlalchemy.orm import sessionmaker, relationship`
+- **Propósito:** Historial de simulaciones clínicas. Esencial para trazabilidad médica y revisión de inversionistas. Métricas de performance del sistema. Trazas de auditoría para el módulo de administración....
+
+---
+
+### Archivo: `web_app/backend/main.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from fastapi import FastAPI, HTTPException, Request, from fastapi.middleware.cors import CORSMiddleware, from fastapi.responses import HTMLResponse, from fastapi.staticfiles import StaticFiles, from pydantic import BaseModel, from typing import List, Dict, Any, from web_app.backend.database.models import init_db, from web_app.backend.services.simulation_service import SimulationService...`
+- **Propósito:** Sirve la SPA del dashboard....
+
+---
+
+### Archivo: `web_app/backend/services/simulation_service.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from biokidney.aggregator import BioKidneyEngine, from biokidney.core.config import cfg_physio, from typing import Dict, Any, from web_app.backend.database.models import SessionLocal, SimulationRecord, from web_app.backend.utils.logger import bk_logger, import time`
+- **Propósito:** Capa de servicio que orquesta las simulaciones del core biokidney y persiste los resultados para auditoría....
+
+---
+
+### Archivo: `web_app/backend/utils/logger.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from loguru import logger, from pathlib import Path, import logging, import sys`
+- **Propósito:** Configura un sistema de logging profesional con Loguru. - Consola con colores para desarrollo. - Archivo rotativo para auditoría médica. - Estructura JSON para fácil integración con ELK/CloudWatch....
 
 ---
 

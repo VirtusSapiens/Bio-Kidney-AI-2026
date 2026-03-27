@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  biokidney-platform:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./web_app/database:/app/web_app/database
+      - ./web_app/logs:/app/web_app/logs
+    environment:
+      - DATABASE_URL=sqlite:///web_app/database/biokidney.db
+    restart: always
