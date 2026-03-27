@@ -1,48 +1,13 @@
 # Informe de Contexto: BioKidney-AI
-**Fecha de generación:** 2026-03-26 19:32:29
+**Fecha de generación:** 2026-03-26 20:15:14
+**Estado del Sistema:** Pipeline 100% Completado (Hito Marzo 2026)
 
 ## 1. Estructura de Directorios
 ```text
-./
-    CONTEXTO_PROYECTO.md
-    analizador_proyecto_biokidney.py
-    biokidney_architect.py
-    inicio.sh
-    07_Videos Luma/
-        Arbol vascular CCO v7.mp4
-        Vascular_Tree_Video_An_abstract_glowing_animation_displays_two_YtuUY7DV.mp4
-    00_bitacora/
+00_bitacora/
         BITACORA.md
         Bitacora_BioKidney_AI_2026.pdf
-    07_presentacion_final/
-        dashboard_maestro.png
-        reporte_validacion_completo.pdf
-        resumen_ejecutivo_una_pagina.pdf
-        scorecard_biokidney_ai_2026.pdf
-    resultados/
-        pareto_coswift.png
-    03_modelos_3d/
-        V7_recto_untitled.blend
-        arbol_vascular_cco.blend
-        arbol_vascular_cco.blend1
-        generar_rinon_completo.py
-        render_biokidney_v7_definitivo.png
-        rinon_biokidney_ai.blend
-        rinon_biokidney_ai_v7.blend
-        rinon_biokidney_ai_v7.blend1
-        rinon_capsula.blend
-        rinon_capsula.blend1
-        solo_capsula.py
-        untitled.png
-        v7_curvountitled.blend
-    06_app/
-        BioKidney_AI_Informe_Desarrollo_dashboard_maestro.docx
-        biokidney_app.py
-        dashboard_maestro_app.py
-        filtracion_glomerular_gui.py
-    05_presentacion/
-        pitch_inversores/
-    01_simuladores/
+01_simuladores/
         BioKidney_AI_2026_Informe_Sesion_TFG.pdf
         BiokidneyAI_Informe_Avance_Mar2026.docx
         Code_Generated_Image.png
@@ -68,13 +33,12 @@
         simulador_filtracion_glomerular_reporte.pdf
         simulador_oxigeno_biokidney.py
         simulador_reabsorcion_tubular.py
-        v1_originales/
+    v1_originales/
             simulador_ipsc_biokidney.py
             simulador_swift_biokidney.py
             simulador_wss_biokidney.py
-        v2_dashboard/
-    04_literatura/
-    02_vascular_cco/
+    v2_dashboard/
+02_vascular_cco/
         arbol_vascular_cco.csv
         arbol_vascular_cco.obj
         arbol_vascular_cco.png
@@ -102,116 +66,97 @@
         generador_cco_v6.py
         generador_cco_v7.py
         senyal_hipoxia_para_cco.csv
+03_modelos_3d/
+        V7_recto_untitled.blend
+        arbol_vascular_cco.blend
+        arbol_vascular_cco.blend1
+        generar_rinon_completo.py
+        render_biokidney_v7_definitivo.png
+        rinon_biokidney_ai.blend
+        rinon_biokidney_ai_v7.blend
+        rinon_biokidney_ai_v7.blend1
+        rinon_capsula.blend
+        rinon_capsula.blend1
+        solo_capsula.py
+        untitled.png
+        v7_curvountitled.blend
+04_literatura/
+05_presentacion/
+    pitch_inversores/
+06_app/
+        BioKidney_AI_Informe_Desarrollo_dashboard_maestro.docx
+        biokidney_app.py
+        dashboard_maestro_app.py
+        filtracion_glomerular_gui.py
+07_Videos Luma/
+        Arbol vascular CCO v7.mp4
+        Vascular_Tree_Video_An_abstract_glowing_animation_displays_two_YtuUY7DV.mp4
+07_presentacion_final/
+        dashboard_maestro.png
+        reporte_validacion_completo.pdf
+        resumen_ejecutivo_una_pagina.pdf
+        scorecard_biokidney_ai_2026.pdf
+    BLUEPRINT_INGENIERIA.md
+    CONTEXTO_PROYECTO.md
+    README.md
+    analizador_proyecto_biokidney.py
+biokidney/
+        __init__.py
+        aggregator.py
+    core/
+            __init__.py
+            config.py
+    experts/
+            __init__.py
+            fluids.py
+            vascular.py
+    utils/
+            __init__.py
+    biokidney_architect.py
+    inicio.sh
+resultados/
+        pareto_coswift.png
 ```
 
 ## 2. Resumen de Componentes Clave
 
-### Archivo: `CONTEXTO_PROYECTO.md`
-- **Tipo:** Documentación Markdown
-- **Vista previa:**
-```markdown
-# Informe de Contexto: BioKidney-AI
-**Fecha de generación:** 2026-03-26 18:02:33
-
-## 1. Estructura de Directorios
-```text
-...
-```
-
----
-
-### Archivo: `analizador_proyecto_biokidney.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `import datetime, import os`
-- **Propósito:** Módulo: Analizador de Proyecto BioKidney-AI ------------------------------------------ Este script realiza un escaneo exhaustivo de la estructura del proyecto BioKidney-AI. Genera un archivo Markdown ...
-
----
-
-### Archivo: `biokidney_architect.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `import os, import sys`
-- **Propósito:** **Enfoque de sesión:** {prompt_usuario} **Generado:** {os.popen('date').read().strip()}  ## 1. Análisis de Arquitectura Sistémica Basado en el inventario de archivos, BioKidney-AI se estructura como u...
-
----
-
 ### Archivo: `00_bitacora/BITACORA.md`
 - **Tipo:** Documentación Markdown
-- **Vista previa:**
-```markdown
-# Bitácora de Proyecto: Bio-Kidney AI
-**Investigador:** [Tu nombre]
-**Inicio del proyecto:** Enero 2026
-**Objetivo:** Desarrollar el modelo computacional completo de un riñón bioimpreso funcional, desde la síntesis vascular hasta la validación hemodinámica, como base científica para el primer riñón artificial bioimpreso viable.
-
-...
-```
-
----
-
-### Archivo: `03_modelos_3d/generar_rinon_completo.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `import bpy, import csv, import math, import numpy as np, import os`
-
----
-
-### Archivo: `03_modelos_3d/solo_capsula.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `import bpy, import math, import os`
-
----
-
-### Archivo: `06_app/biokidney_app.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `from PyQt6.QtCharts import (, from PyQt6.QtCore import Qt, QTimer, from PyQt6.QtGui import QFont, QColor, from PyQt6.QtGui import QPainter, QBrush, QPen, from PyQt6.QtWidgets import (, import numpy as np, import sys`
-- **Propósito:** QMainWindow { background-color: #F4F6F8; } QTabWidget::pane { border: 1px solid #D5D8DC; background: #FFFFFF; border-radius: 8px; } QTabBar::tab { background: #D5D8DC; color: #2C3E50; ...
-
----
-
-### Archivo: `06_app/dashboard_maestro_app.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `from PyQt6.QtCore import Qt,QTimer,QRect,QPropertyAnimation,QEasingCurve,pyqtSignal, from PyQt6.QtGui import QFont,QColor,QPalette,QLinearGradient,QPainter,QBrush,QPen,QRadialGradient,QCursor, from PyQt6.QtWidgets import QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QPushButton,QGroupBox,QGridLayout,QFrame,QSizePolicy,QFileDialog,QMessageBox,QStatusBar,QScrollArea, from datetime import datetime, import sys,os,subprocess`
-
----
-
-### Archivo: `06_app/filtracion_glomerular_gui.py`
-- **Tipo:** Script de Python
-- **Dependencias:** `from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QAreaSeries, from PyQt6.QtCore import Qt, QTimer, from PyQt6.QtGui import QFont, QColor, QPainter, QBrush, QPen, from PyQt6.QtWidgets import (, import numpy as np, import os, import sys`
-- **Propósito:** QMainWindow {{ background-color: {AZUL_OSCURO}; }} QFrame#MainFrame {{ background-color: {AZUL_OSCURO}; }} QGroupBox {{ font-size: 13px; font-weight: bold; color: {AZUL_CLARO}; border: 1.5px solid #30...
 
 ---
 
 ### Archivo: `01_simuladores/optimizador_coswift.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `from matplotlib.colors import LinearSegmentedColormap, from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, from scipy.optimize import minimize, from scipy.spatial import ConvexHull, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.patheffects as pe, import matplotlib.pyplot as plt...`
-- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║          OPTIMIZADOR Co-SWIFT — Bio-Kidney AI 2026                         ║ ║          Módulo de Optimización Multi-...
+- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║          OPTIMIZADOR Co-SWIFT — Bio-Kidney AI 2026                         ║ ║          Módulo de Optimización Multi-Objetivo para Bioimpresión            ║ ║         ...
 
 ---
 
 ### Archivo: `01_simuladores/simulador_diferenciacion_ipsc.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `from matplotlib.ticker import MultipleLocator, from scipy.integrate import solve_ivp, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np, import warnings`
-- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║       Bio-Kidney AI 2026 — Simulador de Diferenciación iPSC                ║ ║       Módulo: Conversión iPSC → Linaje...
+- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║       Bio-Kidney AI 2026 — Simulador de Diferenciación iPSC                ║ ║       Módulo: Conversión iPSC → Linajes Renales Específicos                ║ ║       Ref...
 
 ---
 
 ### Archivo: `01_simuladores/simulador_estres_mecanico_dECM.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `from matplotlib.colors import LinearSegmentedColormap, from matplotlib.patches import Circle, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np, import warnings`
-- **Propósito:** BIO-KIDNEY AI 2026 - VirtusSapiens Carlos David Moreno Caceres SIMULADOR DE ESTRES MECANICO EN dECM - Modulo 09 v5  FISICA IMPLEMENTADA: 1. Elasticidad lineal   : sigma = E * epsilon 2. Kelvin-Voigt  ...
+- **Propósito:** BIO-KIDNEY AI 2026 - VirtusSapiens Carlos David Moreno Caceres SIMULADOR DE ESTRES MECANICO EN dECM - Modulo 09 v5  FISICA IMPLEMENTADA: 1. Elasticidad lineal   : sigma = E * epsilon 2. Kelvin-Voigt         : epsilon(t) = (sigma/E)*(1 - exp(-E*t/eta)...
 
 ---
 
 ### Archivo: `01_simuladores/simulador_filtracion_glomerular.py`
 - **Tipo:** Script de Python
-- **Dependencias:** `from datetime import datetime, from matplotlib.colors import LinearSegmentedColormap, from scipy.integrate import solve_ivp, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np, import os, sys, csv, warnings`
-- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════════╗ ║          SIMULADOR DE FILTRACIÓN GLOMERULAR — Bio-Kidney AI 2026               ║ ║          Carlos David Moreno C...
+- **Dependencias:** `from biokidney.aggregator import BioKidneyEngine, from biokidney.core.config import cfg_physio, cfg_sim, cfg_vasc, from biokidney.experts.fluids import FluidDynamicsExpert, from datetime import datetime, from matplotlib.colors import LinearSegmentedColormap, from scipy.integrate import solve_ivp, import matplotlib, import matplotlib.gridspec as gridspec...`
+- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════════╗ ║          SIMULADOR DE FILTRACIÓN GLOMERULAR — Bio-Kidney AI 2026               ║ ║          Carlos David Moreno Cáceres — VirtusSapiens                           ║...
 
 ---
 
 ### Archivo: `01_simuladores/simulador_filtracion_glomerular_G.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `from datetime import datetime, from matplotlib.colors import LinearSegmentedColormap, from scipy.integrate import solve_ivp, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np, import os, sys, csv, warnings`
-- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════════╗ ║          SIMULADOR DE FILTRACIÓN GLOMERULAR — Bio-Kidney AI 2026               ║ ║          Carlos David Moreno C...
+- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════════╗ ║          SIMULADOR DE FILTRACIÓN GLOMERULAR — Bio-Kidney AI 2026               ║ ║          Carlos David Moreno Cáceres — VirtusSapiens                           ║...
 
 ---
 
@@ -224,7 +169,7 @@
 ### Archivo: `01_simuladores/simulador_reabsorcion_tubular.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `from datetime import datetime, from matplotlib.gridspec import GridSpec, from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, from reportlab.lib import colors, from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, from reportlab.lib.pagesizes import A4, from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle, from reportlab.lib.units import cm...`
-- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║         BIO-KIDNEY AI 2026 — VirtusSapiens © Carlos David Moreno Cáceres   ║ ║              SIMULADOR DE REABSORCIÓN ...
+- **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║         BIO-KIDNEY AI 2026 — VirtusSapiens © Carlos David Moreno Cáceres   ║ ║              SIMULADOR DE REABSORCIÓN TUBULAR — Módulo 12                   ║ ║         ...
 
 ---
 
@@ -298,6 +243,7 @@
 ### Archivo: `02_vascular_cco/exportar_blender.py`
 - **Tipo:** Script de Python
 - **Dependencias:** `import csv, import math, import numpy as np, import os`
+- **Propósito:** Genera vértices e índices de un cilindro entre dos puntos. Retorna (vertices, caras) donde caras son índices locales....
 
 ---
 
@@ -358,20 +304,132 @@
 
 ---
 
+### Archivo: `03_modelos_3d/generar_rinon_completo.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `import bpy, import csv, import math, import numpy as np, import os`
+
+---
+
+### Archivo: `03_modelos_3d/solo_capsula.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `import bpy, import math, import os`
+
+---
+
+### Archivo: `06_app/biokidney_app.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from PyQt6.QtCharts import (, from PyQt6.QtCore import Qt, QTimer, from PyQt6.QtGui import QFont, QColor, from PyQt6.QtGui import QPainter, QBrush, QPen, from PyQt6.QtWidgets import (, import numpy as np, import sys`
+- **Propósito:** QMainWindow { background-color: #F4F6F8; } QTabWidget::pane { border: 1px solid #D5D8DC; background: #FFFFFF; border-radius: 8px; } QTabBar::tab { background: #D5D8DC; color: #2C3E50; padding: 10px 24px; font-size: 13px; font-weight: bold; border-top...
+
+---
+
+### Archivo: `06_app/dashboard_maestro_app.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from PyQt6.QtCore import Qt,QTimer,QRect,QPropertyAnimation,QEasingCurve,pyqtSignal, from PyQt6.QtGui import QFont,QColor,QPalette,QLinearGradient,QPainter,QBrush,QPen,QRadialGradient,QCursor, from PyQt6.QtWidgets import QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QPushButton,QGroupBox,QGridLayout,QFrame,QSizePolicy,QFileDialog,QMessageBox,QStatusBar,QScrollArea, from datetime import datetime, import sys,os,subprocess`
+
+---
+
+### Archivo: `06_app/filtracion_glomerular_gui.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis, QAreaSeries, from PyQt6.QtCore import Qt, QTimer, from PyQt6.QtGui import QFont, QColor, QPainter, QBrush, QPen, from PyQt6.QtWidgets import (, import numpy as np, import os, import sys`
+- **Propósito:** QMainWindow {{ background-color: {AZUL_OSCURO}; }} QFrame#MainFrame {{ background-color: {AZUL_OSCURO}; }} QGroupBox {{ font-size: 13px; font-weight: bold; color: {AZUL_CLARO}; border: 1.5px solid #30363D; border-radius: 8px; margin-top: 15px; paddin...
+
+---
+
+### Archivo: `BLUEPRINT_INGENIERIA.md`
+- **Tipo:** Documentación Markdown
+
+---
+
+### Archivo: `CONTEXTO_PROYECTO.md`
+- **Tipo:** Documentación Markdown
+
+---
+
+### Archivo: `README.md`
+- **Tipo:** Documentación Markdown
+
+---
+
+### Archivo: `analizador_proyecto_biokidney.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from pathlib import Path, from typing import List, Dict, Optional, import datetime, import logging, import os`
+- **Propósito:** Genera una representación visual de la estructura de directorios....
+
+---
+
+### Archivo: `biokidney/__init__.py`
+- **Tipo:** Script de Python
+
+---
+
+### Archivo: `biokidney/aggregator.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from biokidney.core.config import cfg_physio, cfg_vasc, from biokidney.experts.fluids import FluidDynamicsExpert, from biokidney.experts.vascular import VascularExpert, import numpy as np`
+- **Propósito:** Orquestador Principal BioKidney-AI (Patrón Agregación) ------------------------------------------------------ Este módulo actúa como el punto de integración central del framework, agregando a los expertos especializados en cada dominio renal. Agregad...
+
+---
+
+### Archivo: `biokidney/core/__init__.py`
+- **Tipo:** Script de Python
+
+---
+
+### Archivo: `biokidney/core/config.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from dataclasses import dataclass, field, import numpy as np`
+- **Propósito:** Módulo de Configuración Centralizada BioKidney-AI ------------------------------------------------ Este módulo define las constantes fisiológicas y parámetros de simulación para asegurar la consistencia en todo el ecosistema....
+
+---
+
+### Archivo: `biokidney/experts/__init__.py`
+- **Tipo:** Script de Python
+
+---
+
+### Archivo: `biokidney/experts/fluids.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from biokidney.core.config import cfg_physio, cfg_sim, from typing import Tuple, List, import numpy as np`
+- **Propósito:** Modelo Deen para la presión oncótica a lo largo del capilar....
+
+---
+
+### Archivo: `biokidney/experts/vascular.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from biokidney.core.config import cfg_vasc, cfg_sim, from pathlib import Path, from typing import List, Tuple, Optional, import numpy as np`
+- **Propósito:** Verifica si un punto está dentro del elipsoide renal....
+
+---
+
+### Archivo: `biokidney/utils/__init__.py`
+- **Tipo:** Script de Python
+
+---
+
+### Archivo: `biokidney_architect.py`
+- **Tipo:** Script de Python
+- **Dependencias:** `from datetime import datetime, from pathlib import Path, import logging, import os, import sys`
+- **Propósito:** Verifica si la base de conocimiento existe....
+
+---
+
 ## 3. Inventario de Activos Binarios
 
 #### Modelos Blender (.blend)
 - **Total:** 6
-- **Muestras:** `V7_recto_untitled.blend, arbol_vascular_cco.blend, rinon_biokidney_ai.blend, rinon_biokidney_ai_v7.blend, rinon_capsula.blend`
+- **Muestras:** `V7_recto_untitled.blend, arbol_vascular_cco.blend, rinon_biokidney_ai.blend, rinon_capsula.blend, v7_curvountitled.blend...`
 #### Imágenes/Visualizaciones (.png)
 - **Total:** 21
-- **Muestras:** `Code_Generated_Image.png, arbol_vascular_cco.png, arbol_vascular_cco_v2.png, arbol_vascular_cco_v3.png, arbol_vascular_cco_v4.png`
+- **Muestras:** `dashboard_maestro.png, pareto_coswift.png, render_biokidney_v7_definitivo.png, simulador_estres_mecanico_dECM.png, untitled.png...`
 #### Informes (.pdf)
 - **Total:** 8
-- **Muestras:** `BioKidney_AI_2026_Informe_Sesion_TFG.pdf, Bitacora_BioKidney_AI_2026.pdf, informe_sesion_biokidney_marzo2026.pdf, reabsorcion_tubular_informe.pdf, reporte_validacion_completo.pdf`
+- **Muestras:** `Bitacora_BioKidney_AI_2026.pdf, reporte_validacion_completo.pdf, resumen_ejecutivo_una_pagina.pdf, scorecard_biokidney_ai_2026.pdf, simulador_filtracion_glomerular_reporte.pdf...`
 #### Videos (.mp4)
 - **Total:** 2
 - **Muestras:** `Arbol vascular CCO v7.mp4, Vascular_Tree_Video_An_abstract_glowing_animation_displays_two_YtuUY7DV.mp4`
 #### Mallas 3D (.obj)
 - **Total:** 3
 - **Muestras:** `arbol_vascular_cco.obj, arbol_vascular_cco_v7.obj, arbol_vascular_cco_v7_curvo.obj`
+#### Documentos Word (.docx)
+- **Total:** 5
+- **Muestras:** `BioKidney_AI_Informe_Desarrollo_dashboard_maestro.docx, BiokidneyAI_Informe_Avance_Mar2026.docx, Informe_Modulo09_BioKidney_AI_2026.docx, informe_biokidney_ai_2026_Simulador_de_Reabsorción_Tubular.docx, informe_biokidney_coswift.docx`

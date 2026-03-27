@@ -22,7 +22,18 @@ from matplotlib.colors import LinearSegmentedColormap
 from scipy.integrate import solve_ivp
 import os, sys, csv, warnings
 from datetime import datetime
+
+# ── NUEVA INTEGRACIÓN CON NÚCLEO ──────────────────────────────────────────────
+# Asegurar que el directorio raíz esté en el path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from biokidney.core.config import cfg_physio, cfg_sim, cfg_vasc
+from biokidney.experts.fluids import FluidDynamicsExpert
+from biokidney.aggregator import BioKidneyEngine
+
 warnings.filterwarnings('ignore')
+
+# Inicializar experto
+expert_fluids = FluidDynamicsExpert()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PALETA Y ESTILO VISUAL (fondo oscuro — estilo BioKidney AI)
