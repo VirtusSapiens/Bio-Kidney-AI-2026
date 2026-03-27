@@ -1,5 +1,5 @@
 # Informe de Contexto: BioKidney-AI
-**Fecha de generación:** 2026-03-26 20:15:14
+**Fecha de generación:** 2026-03-26 20:34:53
 **Estado del Sistema:** Pipeline 100% Completado (Hito Marzo 2026)
 
 ## 1. Estructura de Directorios
@@ -148,7 +148,7 @@ resultados/
 
 ### Archivo: `01_simuladores/simulador_filtracion_glomerular.py`
 - **Tipo:** Script de Python
-- **Dependencias:** `from biokidney.aggregator import BioKidneyEngine, from biokidney.core.config import cfg_physio, cfg_sim, cfg_vasc, from biokidney.experts.fluids import FluidDynamicsExpert, from datetime import datetime, from matplotlib.colors import LinearSegmentedColormap, from scipy.integrate import solve_ivp, import matplotlib, import matplotlib.gridspec as gridspec...`
+- **Dependencias:** `from datetime import datetime, from matplotlib.colors import LinearSegmentedColormap, from scipy.integrate import solve_ivp, import matplotlib, import matplotlib.gridspec as gridspec, import matplotlib.pyplot as plt, import numpy as np, import os, sys, csv, warnings`
 - **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════════╗ ║          SIMULADOR DE FILTRACIÓN GLOMERULAR — Bio-Kidney AI 2026               ║ ║          Carlos David Moreno Cáceres — VirtusSapiens                           ║...
 
 ---
@@ -168,7 +168,7 @@ resultados/
 
 ### Archivo: `01_simuladores/simulador_reabsorcion_tubular.py`
 - **Tipo:** Script de Python
-- **Dependencias:** `from datetime import datetime, from matplotlib.gridspec import GridSpec, from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, from reportlab.lib import colors, from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, from reportlab.lib.pagesizes import A4, from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle, from reportlab.lib.units import cm...`
+- **Dependencias:** `from biokidney.aggregator import BioKidneyEngine, from biokidney.core.config import cfg_physio, cfg_sim, from biokidney.experts.fluids import FluidDynamicsExpert, from datetime import datetime, from matplotlib.gridspec import GridSpec, from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, from reportlab.lib import colors, from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT...`
 - **Propósito:** ╔══════════════════════════════════════════════════════════════════════════════╗ ║         BIO-KIDNEY AI 2026 — VirtusSapiens © Carlos David Moreno Cáceres   ║ ║              SIMULADOR DE REABSORCIÓN TUBULAR — Módulo 12                   ║ ║         ...
 
 ---

@@ -1,4 +1,4 @@
-"""
++-"""
 ╔══════════════════════════════════════════════════════════════════════════════════╗
 ║          SIMULADOR DE FILTRACIÓN GLOMERULAR — Bio-Kidney AI 2026               ║
 ║          Carlos David Moreno Cáceres — VirtusSapiens                           ║
@@ -22,18 +22,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from scipy.integrate import solve_ivp
 import os, sys, csv, warnings
 from datetime import datetime
-
-# ── NUEVA INTEGRACIÓN CON NÚCLEO ──────────────────────────────────────────────
-# Asegurar que el directorio raíz esté en el path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from biokidney.core.config import cfg_physio, cfg_sim, cfg_vasc
-from biokidney.experts.fluids import FluidDynamicsExpert
-from biokidney.aggregator import BioKidneyEngine
-
 warnings.filterwarnings('ignore')
-
-# Inicializar experto
-expert_fluids = FluidDynamicsExpert()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PALETA Y ESTILO VISUAL (fondo oscuro — estilo BioKidney AI)
@@ -770,7 +759,7 @@ def generar_pdf(res, png_path, pdf_path):
         story.append(Spacer(1, 0.3*cm))
 
         # Imagen principal
-        img_w, img_h = 22*cm, 13*cm
+        img_w, img_h = 25*cm, 17.5*cm
         story.append(RLImage(png_path, width=img_w, height=img_h))
         story.append(Spacer(1, 0.4*cm))
 
@@ -832,7 +821,7 @@ def generar_pdf(res, png_path, pdf_path):
         story.append(Spacer(1, 0.3*cm))
         story.append(Paragraph(
             "VirtusSapiens | Bio-Kidney AI 2026 | Investigador: Carlos David Moreno Cáceres | "
-            f"Pipeline in silico: 100% completado | Módulo: Simulador de Filtración Glomerular",
+            f"Pipeline in silico: 80% completado | Módulo: Simulador de Filtración Glomerular",
             ParagraphStyle('footer', parent=styles['Normal'], fontSize=7,
                            textColor=colors.HexColor('#888888'))
         ))

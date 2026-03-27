@@ -27,6 +27,25 @@ class FluidDynamicsExpert:
         delta_p = (pgc - pbs) - (pi_gc - pi_bs)
         return kf * max(delta_p, 0.0)
 
+    @staticmethod
+    def michaelis_menten(tm: float, km: float, concentracion: float) -> float:
+        """
+        Calcula la tasa de transporte activo: J = Tm * C / (Km + C)
+        Retorna la fracción de capacidad utilizada (0-1).
+        """
+        if tm <= 0: return 0.0
+        j = tm * concentracion / (km + concentracion)
+        return min(j / tm, 1.0)
+
+    @staticmethod
+    def kedem_katchalsky_water(lp: float, delta_osm: float, vol_in: float) -> float:
+        """
+        Calcula el flujo de agua pasivo: Jv = Lp * delta_osm.
+        Retorna el volumen reabsorbido (mL/min).
+        """
+        jv = lp * abs(delta_osm) * vol_in
+        return min(jv, vol_in * 0.85)
+
     def integrate_capillary_filtration(self, pgc: float, pi_0: float) -> Tuple[float, float, float]:
         """
         Realiza la integración numérica (RK4 o Trapecio) a lo largo del capilar.
