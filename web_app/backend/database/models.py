@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -44,7 +45,7 @@ class AdminLog(Base):
     detalle = Column(String)
 
 # Configuración de base de datos
-DATABASE_URL = "sqlite:///web_app/database/biokidney.db"
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///web_app/database/biokidney.db")
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

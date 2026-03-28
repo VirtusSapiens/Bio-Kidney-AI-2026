@@ -1,29 +1,25 @@
-# Stage 1: Build/Run
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Instalar dependencias del sistema
-RUN apt-get update && apt-get install -y \
-    build-essential \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar requerimientos e instalar
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el core del proyecto y la web app
 COPY biokidney/ ./biokidney/
 COPY web_app/ ./web_app/
 
-# Crear directorios para BD y Logs
 RUN mkdir -p web_app/database web_app/logs
 
-# Exponer puerto FastAPI
+ENV PYTHONPATH=/app
+ENV DATABASE_URL=sqlite:////app/web_app/database/biokidney.db
+
 EXPOSE 8000
 
-# Variable de entorno para Python Path
-ENV PYTHONPATH=/app
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/api/system/health || exit 1
 
-# Comando de inicio
 CMD ["python", "web_app/backend/main.py"]

@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioKidney AI | Control Center</title>
+    <title>BioKidney AI 2026 | Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -14,208 +15,875 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        background: '#020817',
-                        card: '#0f172a',
+                        bg: { DEFAULT: '#020817', card: '#0f172a', hover: '#1e293b' },
+                        border: { DEFAULT: '#1e293b', light: '#334155' },
                         primary: '#3b82f6',
-                        accent: '#10b981'
+                        accent: '#10b981',
+                        vascular: '#ef4444',
+                        filtration: '#3b82f6',
+                        reabsorption: '#a855f7',
+                        oxygen: '#06b6d4',
+                        ipsc: '#22c55e',
+                        bioprinting: '#f59e0b',
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #020817; color: #f8fafc; }
-        .v0-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 0.75rem; }
-        .v0-sidebar { border-right: 1px solid #1e293b; }
+        body { background: #020817; color: #f1f5f9; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 0.75rem; transition: border-color 0.2s; }
+        .card:hover { border-color: #334155; }
+        .nav-item { transition: all 0.15s; }
+        .nav-item.active { background: rgba(59,130,246,0.12); color: #3b82f6; border-right: 2px solid #3b82f6; }
+        .nav-item:hover:not(.active) { background: rgba(255,255,255,0.04); }
+        .badge { font-size: 0.625rem; padding: 2px 6px; border-radius: 9999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-optimal { background: rgba(16,185,129,0.15); color: #10b981; }
+        .badge-functional { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .badge-warning { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .badge-error { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .pulse { animation: pulse-glow 2s infinite; }
+        @keyframes pulse-glow { 0%,100%{opacity:1} 50%{opacity:0.6} }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .console-line { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 11px; line-height: 1.6; }
+        .param-input { background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 6px 10px; color: #f1f5f9; font-size: 13px; width: 100%; }
+        .param-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        .btn-primary { background: #3b82f6; color: white; padding: 8px 20px; border-radius: 0.5rem; font-weight: 600; font-size: 13px; transition: all 0.15s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 8px 16px; border-radius: 0.5rem; font-weight: 500; font-size: 13px; transition: all 0.15s; }
+        .btn-secondary:hover { background: #334155; color: #f1f5f9; }
+        .metric-ring { position: relative; width: 120px; height: 120px; }
+        .metric-ring svg { transform: rotate(-90deg); }
+        .tab-btn { padding: 8px 16px; font-size: 13px; font-weight: 500; border-radius: 0.375rem; transition: all 0.15s; color: #94a3b8; }
+        .tab-btn.active { background: rgba(59,130,246,0.12); color: #3b82f6; }
+        .tab-btn:hover:not(.active) { color: #e2e8f0; }
     </style>
 </head>
 <body class="font-sans antialiased">
-    <div class="flex h-screen overflow-hidden">
-        <!-- SIDEBAR (V0 Style) -->
-        <aside class="w-64 v0-sidebar flex-shrink-0 bg-background flex flex-col p-6 space-y-8">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <i data-lucide="activity" class="text-white w-5 h-5"></i>
-                </div>
-                <span class="text-xl font-bold tracking-tight">BioKidney AI</span>
-            </div>
-            
-            <nav class="flex-1 space-y-2">
-                <a href="#" class="flex items-center space-x-3 p-3 bg-white/10 rounded-md text-primary">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                    <span class="font-medium">Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 p-3 text-slate-400 hover:bg-white/5 rounded-md transition">
-                    <i data-lucide="microscope" class="w-5 h-5"></i>
-                    <span>Simuladores</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 p-3 text-slate-400 hover:bg-white/5 rounded-md transition">
-                    <i data-lucide="database" class="w-5 h-5"></i>
-                    <span>Historial Clínico</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 p-3 text-slate-400 hover:bg-white/5 rounded-md transition">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                    <span>Configuración</span>
-                </a>
-            </nav>
+<div class="flex h-screen overflow-hidden">
 
-            <div class="mt-auto p-4 bg-primary/10 border border-primary/20 rounded-xl">
-                <p class="text-xs text-primary font-semibold mb-1 uppercase">Estado Pipeline</p>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-bold">100% Completado</span>
-                    <i data-lucide="check-circle" class="w-4 h-4 text-primary"></i>
-                </div>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="flex-1 overflow-y-auto p-8 bg-background/50">
-            <!-- HEADER -->
-            <header class="flex justify-between items-center mb-10">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Centro de Control Médico</h1>
-                    <p class="text-slate-400 mt-1">Simulación y Validación de Riñón Artificial en Tiempo Real.</p>
-                </div>
-                <div class="flex space-x-4">
-                    <button onclick="runSimulation()" id="runBtn" class="bg-primary hover:bg-blue-600 px-6 py-2.5 rounded-lg font-semibold flex items-center space-x-2 transition shadow-lg shadow-primary/20">
-                        <i data-lucide="play" class="w-4 h-4"></i>
-                        <span>Iniciar Simulación</span>
-                    </button>
-                    <button class="bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-lg border border-slate-700 transition">
-                        <i data-lucide="share-2" class="w-5 h-5"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- STATS GRID -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div class="v0-card p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm text-slate-400 font-medium">TFG Simulado</span>
-                        <i data-lucide="droplet" class="text-primary w-5 h-5"></i>
-                    </div>
-                    <div class="text-2xl font-bold" id="stat-tfg">82.02 <span class="text-sm font-normal text-slate-500 italic">mL/min</span></div>
-                    <div class="mt-2 text-xs text-accent flex items-center font-medium">
-                        <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i>
-                        Supera umbral diálisis
-                    </div>
-                </div>
-                <div class="v0-card p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm text-slate-400 font-medium">Viabilidad Celular</span>
-                        <i data-lucide="user-check" class="text-accent w-5 h-5"></i>
-                    </div>
-                    <div class="text-2xl font-bold" id="stat-via">98.5 <span class="text-sm font-normal text-slate-500">%</span></div>
-                    <div class="mt-2 text-xs text-accent flex items-center font-medium italic">Optimizado vía PSO</div>
-                </div>
-                <div class="v0-card p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm text-slate-400 font-medium">Oxigenación</span>
-                        <i data-lucide="wind" class="text-cyan-400 w-5 h-5"></i>
-                    </div>
-                    <div class="text-2xl font-bold">100.0 <span class="text-sm font-normal text-slate-500">%</span></div>
-                    <div class="mt-2 text-xs text-slate-500 font-medium italic">0% zonas hipóxicas</div>
-                </div>
-                <div class="v0-card p-6 border-primary/30">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm text-slate-400 font-medium">Estado Global</span>
-                        <i data-lucide="shield-check" class="text-primary w-5 h-5"></i>
-                    </div>
-                    <div class="text-2xl font-bold text-primary">ÓPTIMO</div>
-                    <div class="mt-2 text-xs text-slate-500 font-medium">Grado Médico Validado</div>
-                </div>
-            </div>
-
-            <!-- ANALYTICS GRID -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- VIRTUAL CONSOLE -->
-                <div class="v0-card flex flex-col h-[400px]">
-                    <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                        <span class="text-sm font-semibold flex items-center">
-                            <i data-lucide="terminal" class="w-4 h-4 mr-2 text-primary"></i>
-                            Consola de Motor Biofísico
-                        </span>
-                        <span class="text-[10px] text-slate-500 font-mono">Engine v2026.1.0</span>
-                    </div>
-                    <div id="console" class="flex-1 p-4 font-mono text-xs overflow-y-auto space-y-1 text-slate-300 scrollbar-hide">
-                        <p class="text-slate-500">Esperando ejecución...</p>
-                    </div>
-                </div>
-
-                <!-- RECENT ACTIVITY / METRICS -->
-                <div class="v0-card flex flex-col h-[400px]">
-                    <div class="p-4 border-b border-slate-800">
-                        <span class="text-sm font-semibold">Métricas de Performance</span>
-                    </div>
-                    <div class="flex-1 p-6 flex flex-col justify-center items-center">
-                        <div class="w-48 h-48 rounded-full border-[12px] border-primary/20 flex items-center justify-center relative">
-                            <div class="absolute inset-0 rounded-full border-[12px] border-primary" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);"></div>
-                            <div class="text-center">
-                                <span class="text-4xl font-bold">12ms</span>
-                                <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Latencia Solver</p>
-                            </div>
-                        </div>
-                        <div class="mt-8 grid grid-cols-2 gap-8 w-full">
-                            <div class="text-center">
-                                <span class="block text-xl font-semibold">0.4 GB</span>
-                                <span class="text-[10px] text-slate-500 uppercase">Memoria</span>
-                            </div>
-                            <div class="text-center">
-                                <span class="block text-xl font-semibold">1000</span>
-                                <span class="text-[10px] text-slate-500 uppercase">Nodos Glom</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="w-[220px] flex-shrink-0 border-r border-border flex flex-col bg-bg">
+    <div class="p-5 flex items-center gap-3">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <i data-lucide="heart-pulse" class="text-white w-4 h-4"></i>
+        </div>
+        <div>
+            <div class="text-sm font-bold tracking-tight">BioKidney AI</div>
+            <div class="text-[10px] text-slate-500 font-mono">v2026.2.0</div>
+        </div>
     </div>
 
-    <script>
-        lucide.createIcons();
+    <div class="px-3 mb-2"><div class="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-2">Principal</div></div>
+    <nav class="flex-1 px-2 space-y-0.5" id="nav">
+        <a onclick="navigate('dashboard')" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="dashboard">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Dashboard</span>
+        </a>
+        <a onclick="navigate('vascular')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="vascular">
+            <i data-lucide="git-branch" class="w-4 h-4 text-vascular"></i><span>Vascular CCO</span>
+        </a>
+        <a onclick="navigate('filtration')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="filtration">
+            <i data-lucide="droplets" class="w-4 h-4 text-filtration"></i><span>Filtracion</span>
+        </a>
+        <a onclick="navigate('reabsorption')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="reabsorption">
+            <i data-lucide="flask-round" class="w-4 h-4 text-reabsorption"></i><span>Reabsorcion</span>
+        </a>
+        <a onclick="navigate('oxygen')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="oxygen">
+            <i data-lucide="wind" class="w-4 h-4 text-oxygen"></i><span>Oxigenacion</span>
+        </a>
+        <a onclick="navigate('ipsc')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="ipsc">
+            <i data-lucide="dna" class="w-4 h-4 text-ipsc"></i><span>iPSC</span>
+        </a>
+        <a onclick="navigate('bioprinting')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="bioprinting">
+            <i data-lucide="printer" class="w-4 h-4 text-bioprinting"></i><span>Bioprinting</span>
+        </a>
 
-        const logConsole = (msg, type = 'info') => {
-            const consoleEl = document.getElementById('console');
-            const p = document.createElement('p');
-            const time = new Date().toLocaleTimeString();
-            let color = 'text-slate-400';
-            if(type === 'success') color = 'text-accent font-semibold';
-            if(type === 'error') color = 'text-red-400';
-            
-            p.innerHTML = `<span class="text-slate-600">[${time}]</span> <span class="${color}">${msg}</span>`;
-            consoleEl.appendChild(p);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        };
+        <div class="pt-3 pb-1"><div class="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-2">Sistema</div></div>
+        <a onclick="navigate('history')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="history">
+            <i data-lucide="clock" class="w-4 h-4"></i><span>Historial</span>
+        </a>
+        <a onclick="navigate('console')" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-sm" data-page="console">
+            <i data-lucide="terminal" class="w-4 h-4"></i><span>Consola</span>
+        </a>
+    </nav>
 
-        async function runSimulation() {
-            const btn = document.getElementById('runBtn');
-            btn.disabled = true;
-            btn.classList.add('opacity-50');
-            
-            logConsole("Iniciando petición al framework biokidney...", 'info');
-            logConsole("Cargando Experto Vascular...", 'info');
-            
-            try {
-                const response = await fetch('/api/simulate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ params: { mode: 'full' } })
-                });
-                
-                const data = await response.json();
-                
-                logConsole(`Pipeline completado en ${data.duration_ms.toFixed(2)}ms`, 'success');
-                logConsole(`TFG Resultante: ${data.tfg_final.toFixed(2)} mL/min`, 'success');
-                
-                document.getElementById('stat-tfg').innerHTML = `${data.tfg_final.toFixed(2)} <span class="text-sm font-normal text-slate-500 italic">mL/min</span>`;
-                
-            } catch (err) {
-                logConsole("Error en la conexión con el motor: " + err.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50');
-            }
+    <div class="p-3 m-2 rounded-xl bg-primary/5 border border-primary/15">
+        <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-bold text-primary uppercase">Pipeline</span>
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-primary"></i>
+        </div>
+        <div class="text-xs font-bold">100% Completado</div>
+        <div class="mt-1.5 h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-primary rounded-full" style="width:100%"></div>
+        </div>
+    </div>
+    <div class="p-3 text-[10px] text-slate-600 text-center">VirtusSapiens &copy; 2026</div>
+</aside>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main class="flex-1 overflow-y-auto" id="main-content">
+
+<!-- ─── PAGE: DASHBOARD ─── -->
+<div id="page-dashboard" class="page p-6 lg:p-8 fade-in">
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight">Centro de Control</h1>
+            <p class="text-sm text-slate-400 mt-1">Validacion in-silico de rinon bioimpreso — Todos los modulos</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="runFullPipeline()" id="btn-pipeline" class="btn-primary flex items-center gap-2">
+                <i data-lucide="play" class="w-4 h-4"></i> Pipeline Completo
+            </button>
+            <button onclick="navigate('history')" class="btn-secondary flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4"></i> Historial
+            </button>
+        </div>
+    </header>
+
+    <!-- Global Status -->
+    <div id="dash-global-status" class="card p-4 mb-6 flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-5 h-5 text-accent"></i>
+        </div>
+        <div class="flex-1">
+            <div class="text-sm font-semibold">Estado Global del Pipeline</div>
+            <div class="text-xs text-slate-400">Ejecute el pipeline completo para obtener resultados actualizados</div>
+        </div>
+        <span class="badge badge-optimal" id="dash-global-badge">LISTO</span>
+    </div>
+
+    <!-- Module Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-8" id="dash-modules">
+        <!-- Vascular -->
+        <div class="card p-5 cursor-pointer hover:border-vascular/40" onclick="navigate('vascular')">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-vascular/10 flex items-center justify-center">
+                        <i data-lucide="git-branch" class="w-4 h-4 text-vascular"></i>
+                    </div>
+                    <div class="text-sm font-semibold">Vascular CCO</div>
+                </div>
+                <span class="badge badge-optimal" id="dash-vasc-badge">--</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500 uppercase">Segmentos</div><div class="text-lg font-bold" id="dash-vasc-seg">1,448</div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase">Murray</div><div class="text-lg font-bold" id="dash-vasc-murray">100%</div></div>
+            </div>
+        </div>
+        <!-- Filtration -->
+        <div class="card p-5 cursor-pointer hover:border-filtration/40" onclick="navigate('filtration')">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-filtration/10 flex items-center justify-center">
+                        <i data-lucide="droplets" class="w-4 h-4 text-filtration"></i>
+                    </div>
+                    <div class="text-sm font-semibold">Filtracion Glomerular</div>
+                </div>
+                <span class="badge badge-functional" id="dash-filt-badge">--</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500 uppercase">TFG</div><div class="text-lg font-bold" id="dash-filt-tfg">82.02 <span class="text-xs font-normal text-slate-500">mL/min</span></div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase">% Nativo</div><div class="text-lg font-bold" id="dash-filt-pct">131%</div></div>
+            </div>
+        </div>
+        <!-- Reabsorption -->
+        <div class="card p-5 cursor-pointer hover:border-reabsorption/40" onclick="navigate('reabsorption')">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-reabsorption/10 flex items-center justify-center">
+                        <i data-lucide="flask-round" class="w-4 h-4 text-reabsorption"></i>
+                    </div>
+                    <div class="text-sm font-semibold">Reabsorcion Tubular</div>
+                </div>
+                <span class="badge badge-optimal" id="dash-reabs-badge">--</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500 uppercase">Orina</div><div class="text-lg font-bold" id="dash-reabs-urine">1.52 <span class="text-xs font-normal text-slate-500">mL/min</span></div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase">Reabs.</div><div class="text-lg font-bold" id="dash-reabs-pct">98.1%</div></div>
+            </div>
+        </div>
+        <!-- Oxygen -->
+        <div class="card p-5 cursor-pointer hover:border-oxygen/40" onclick="navigate('oxygen')">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-oxygen/10 flex items-center justify-center">
+                        <i data-lucide="wind" class="w-4 h-4 text-oxygen"></i>
+                    </div>
+                    <div class="text-sm font-semibold">Oxigenacion</div>
+                </div>
+                <span class="badge badge-optimal" id="dash-oxy-badge">--</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500 uppercase">PO2 min</div><div class="text-lg font-bold" id="dash-oxy-min">5.6 <span class="text-xs font-normal text-slate-500">mmHg</span></div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase">Hipoxia</div><div class="text-lg font-bold" id="dash-oxy-hyp">0%</div></div>
+            </div>
+        </div>
+        <!-- iPSC -->
+        <div class="card p-5 cursor-pointer hover:border-ipsc/40" onclick="navigate('ipsc')">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-ipsc/10 flex items-center justify-center">
+                        <i data-lucide="dna" class="w-4 h-4 text-ipsc"></i>
+                    </div>
+                    <div class="text-sm font-semibold">Diferenciacion iPSC</div>
+                </div>
+                <span class="badge badge-optimal" id="dash-ipsc-badge">--</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500 uppercase">Protocolos</div><div class="text-lg font-bold" id="dash-ipsc-apt">3/3</div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase">Pureza</div><div class="text-lg font-bold" id="dash-ipsc-purity">100%</div></div>
+            </div>
+        </div>
+        <!-- Bioprinting -->
+        <div class="card p-5 cursor-pointer hover:border-bioprinting/40" onclick="navigate('bioprinting')">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-bioprinting/10 flex items-center justify-center">
+                        <i data-lucide="printer" class="w-4 h-4 text-bioprinting"></i>
+                    </div>
+                    <div class="text-sm font-semibold">Co-SWIFT Bioprinting</div>
+                </div>
+                <span class="badge badge-optimal" id="dash-bio-badge">--</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500 uppercase">Viabilidad</div><div class="text-lg font-bold" id="dash-bio-via">98%</div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase">Presion</div><div class="text-lg font-bold" id="dash-bio-pres">60 <span class="text-xs font-normal text-slate-500">kPa</span></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-5">
+            <div class="text-sm font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 text-primary"></i> Resumen de Modulos
+            </div>
+            <div style="height:280px"><canvas id="chart-dash-summary"></canvas></div>
+        </div>
+        <div class="card flex flex-col" style="height: 340px">
+            <div class="p-4 border-b border-border flex items-center justify-between">
+                <span class="text-sm font-semibold flex items-center gap-2">
+                    <i data-lucide="terminal" class="w-4 h-4 text-primary"></i> Consola
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">Engine v2026.2</span>
+            </div>
+            <div id="dash-console" class="flex-1 p-3 overflow-y-auto space-y-0.5">
+                <p class="console-line text-slate-500">Esperando ejecucion...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── PAGE: VASCULAR ─── -->
+<div id="page-vascular" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-vascular/10 flex items-center justify-center"><i data-lucide="git-branch" class="w-5 h-5 text-vascular"></i></div>
+        <div><h1 class="text-xl font-bold">Sistema Vascular — CCO v7</h1><p class="text-xs text-slate-400">Constructive Constrained Optimization + Ley de Murray</p></div>
+    </header>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Semillas</div><input type="number" class="param-input" id="p-vasc-seeds" value="1000" min="100" max="5000"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Exponente Murray</div><input type="number" class="param-input" id="p-vasc-murray" value="3.0" step="0.1" min="2" max="4"></div>
+        <div class="card p-4 flex items-end"><button onclick="runModule('vascular')" class="btn-primary w-full flex items-center justify-center gap-2" id="btn-vascular"><i data-lucide="play" class="w-4 h-4"></i> Simular</button></div>
+        <div class="card p-4 flex items-center justify-center"><span class="badge badge-optimal text-base px-4 py-1.5" id="vasc-status">--</span></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="vasc-metrics">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Segmentos</div><div class="text-xl font-bold mt-1" id="vasc-seg">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Murray %</div><div class="text-xl font-bold mt-1" id="vasc-murray">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Radio min</div><div class="text-xl font-bold mt-1" id="vasc-rmin">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Radio max</div><div class="text-xl font-bold mt-1" id="vasc-rmax">--</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Distribucion de Radios</div><div style="height:260px"><canvas id="chart-vasc-radii"></canvas></div></div>
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Distribucion por Nivel</div><div style="height:260px"><canvas id="chart-vasc-levels"></canvas></div></div>
+    </div>
+</div>
+
+<!-- ─── PAGE: FILTRATION ─── -->
+<div id="page-filtration" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-filtration/10 flex items-center justify-center"><i data-lucide="droplets" class="w-5 h-5 text-filtration"></i></div>
+        <div><h1 class="text-xl font-bold">Filtracion Glomerular</h1><p class="text-xs text-slate-400">Ecuacion de Starling + Modelo Deen-Robertson-Brenner</p></div>
+    </header>
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Pgc (mmHg)</div><input type="number" class="param-input" id="p-filt-pgc" value="60" step="1" min="40" max="80"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Pi GC (mmHg)</div><input type="number" class="param-input" id="p-filt-pigc" value="28" step="1" min="15" max="40"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">N Glomerulos</div><input type="number" class="param-input" id="p-filt-nglom" value="1000000" step="100000" min="100000" max="2000000"></div>
+        <div class="card p-4 flex items-end"><button onclick="runModule('filtration')" class="btn-primary w-full flex items-center justify-center gap-2" id="btn-filtration"><i data-lucide="play" class="w-4 h-4"></i> Simular</button></div>
+        <div class="card p-4 flex items-center justify-center"><span class="badge badge-functional text-base px-4 py-1.5" id="filt-status">--</span></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">TFG</div><div class="text-xl font-bold mt-1" id="filt-tfg">--</div><div class="text-[10px] text-slate-500">mL/min</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Fraccion Filtr.</div><div class="text-xl font-bold mt-1" id="filt-ff">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">dP Starling</div><div class="text-xl font-bold mt-1" id="filt-dp">--</div><div class="text-[10px] text-slate-500">mmHg</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">% Nativo</div><div class="text-xl font-bold mt-1" id="filt-pct">--</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Presiones de Starling a lo largo del capilar</div><div style="height:280px"><canvas id="chart-filt-starling"></canvas></div></div>
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">TFG vs Presion Arterial</div><div style="height:280px"><canvas id="chart-filt-curve"></canvas></div></div>
+    </div>
+    <div class="card p-5"><div class="text-sm font-semibold mb-3">Distribucion TFG por Glomerulo</div><div style="height:240px"><canvas id="chart-filt-hist"></canvas></div></div>
+</div>
+
+<!-- ─── PAGE: REABSORPTION ─── -->
+<div id="page-reabsorption" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-reabsorption/10 flex items-center justify-center"><i data-lucide="flask-round" class="w-5 h-5 text-reabsorption"></i></div>
+        <div><h1 class="text-xl font-bold">Reabsorcion Tubular</h1><p class="text-xs text-slate-400">Michaelis-Menten + Kedem-Katchalsky — 5 segmentos del nefron</p></div>
+    </header>
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">GFR entrada</div><input type="number" class="param-input" id="p-reabs-gfr" value="82" step="1" min="30" max="150"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Aldosterona</div><input type="number" class="param-input" id="p-reabs-aldo" value="1.0" step="0.1" min="0" max="3"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">ADH/AVP</div><input type="number" class="param-input" id="p-reabs-adh" value="1.0" step="0.1" min="0" max="3"></div>
+        <div class="card p-4 flex items-end"><button onclick="runModule('reabsorption')" class="btn-primary w-full flex items-center justify-center gap-2" id="btn-reabsorption"><i data-lucide="play" class="w-4 h-4"></i> Simular</button></div>
+        <div class="card p-4 flex items-center justify-center"><span class="badge badge-optimal text-base px-4 py-1.5" id="reabs-status">--</span></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Vol. Orina</div><div class="text-xl font-bold mt-1" id="reabs-urine">--</div><div class="text-[10px] text-slate-500">mL/min</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">L/dia</div><div class="text-xl font-bold mt-1" id="reabs-lday">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Reabsorcion</div><div class="text-xl font-bold mt-1" id="reabs-pct">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Osm. Orina</div><div class="text-xl font-bold mt-1" id="reabs-osm">--</div><div class="text-[10px] text-slate-500">mOsm/kg</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Volumen por Segmento (cascada)</div><div style="height:280px"><canvas id="chart-reabs-waterfall"></canvas></div></div>
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Perfil Osmotico</div><div style="height:280px"><canvas id="chart-reabs-osm"></canvas></div></div>
+    </div>
+    <div class="card p-5"><div class="text-sm font-semibold mb-3">Saturacion de Transportadores</div><div style="height:240px"><canvas id="chart-reabs-transport"></canvas></div></div>
+</div>
+
+<!-- ─── PAGE: OXYGEN ─── -->
+<div id="page-oxygen" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-oxygen/10 flex items-center justify-center"><i data-lucide="wind" class="w-5 h-5 text-oxygen"></i></div>
+        <div><h1 class="text-xl font-bold">Difusion de Oxigeno</h1><p class="text-xs text-slate-400">Ley de Fick + SOR + Michaelis-Menten consumo metabolico</p></div>
+    </header>
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Grid size</div><input type="number" class="param-input" id="p-oxy-grid" value="30" step="5" min="15" max="60"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">PO2 art (mmHg)</div><input type="number" class="param-input" id="p-oxy-part" value="40" step="5" min="20" max="100"></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Max iter</div><input type="number" class="param-input" id="p-oxy-iter" value="300" step="50" min="100" max="2000"></div>
+        <div class="card p-4 flex items-end"><button onclick="runModule('oxygen')" class="btn-primary w-full flex items-center justify-center gap-2" id="btn-oxygen"><i data-lucide="play" class="w-4 h-4"></i> Simular</button></div>
+        <div class="card p-4 flex items-center justify-center"><span class="badge badge-optimal text-base px-4 py-1.5" id="oxy-status">--</span></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">PO2 min</div><div class="text-xl font-bold mt-1" id="oxy-min">--</div><div class="text-[10px] text-slate-500">mmHg</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">PO2 mean</div><div class="text-xl font-bold mt-1" id="oxy-mean">--</div><div class="text-[10px] text-slate-500">mmHg</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Hipoxia</div><div class="text-xl font-bold mt-1" id="oxy-hyp">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Iteraciones</div><div class="text-xl font-bold mt-1" id="oxy-iters">--</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Distribucion PO2</div><div style="height:280px"><canvas id="chart-oxy-hist"></canvas></div></div>
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Perfil Transversal PO2</div><div style="height:280px"><canvas id="chart-oxy-cross"></canvas></div></div>
+    </div>
+</div>
+
+<!-- ─── PAGE: iPSC ─── -->
+<div id="page-ipsc" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-ipsc/10 flex items-center justify-center"><i data-lucide="dna" class="w-5 h-5 text-ipsc"></i></div>
+        <div><h1 class="text-xl font-bold">Diferenciacion iPSC</h1><p class="text-xs text-slate-400">3 protocolos: Podocitos, Tub. Proximales, Endoteliales — Takasato 2015</p></div>
+    </header>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">Dias cultivo</div><input type="number" class="param-input" id="p-ipsc-days" value="30" step="1" min="15" max="60"></div>
+        <div class="card p-4 flex items-end"><button onclick="runModule('ipsc')" class="btn-primary w-full flex items-center justify-center gap-2" id="btn-ipsc"><i data-lucide="play" class="w-4 h-4"></i> Simular</button></div>
+        <div class="card p-4 flex items-center justify-center"><span class="badge badge-optimal text-base px-4 py-1.5" id="ipsc-status">--</span></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Protocolos aptos</div><div class="text-xl font-bold mt-1" id="ipsc-apt">--</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Pureza Fenotipica por Protocolo (%)</div><div style="height:300px"><canvas id="chart-ipsc-purity"></canvas></div></div>
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Riesgo Teratoma — iPSC Residuales (%)</div><div style="height:300px"><canvas id="chart-ipsc-teratoma"></canvas></div></div>
+    </div>
+    <div id="ipsc-protocols-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+</div>
+
+<!-- ─── PAGE: BIOPRINTING ─── -->
+<div id="page-bioprinting" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-bioprinting/10 flex items-center justify-center"><i data-lucide="printer" class="w-5 h-5 text-bioprinting"></i></div>
+        <div><h1 class="text-xl font-bold">Optimizacion Co-SWIFT Bioprinting</h1><p class="text-xs text-slate-400">Herschel-Bulkley + Frente de Pareto — Multi-objetivo</p></div>
+    </header>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase mb-1">N particulas</div><input type="number" class="param-input" id="p-bio-particles" value="100" step="10" min="20" max="500"></div>
+        <div class="card p-4 flex items-end"><button onclick="runModule('bioprinting')" class="btn-primary w-full flex items-center justify-center gap-2" id="btn-bioprinting"><i data-lucide="play" class="w-4 h-4"></i> Simular</button></div>
+        <div class="card p-4 flex items-center justify-center"><span class="badge badge-optimal text-base px-4 py-1.5" id="bio-status">--</span></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Bioink</div><div class="text-xs font-medium mt-1 text-slate-300" id="bio-ink">GelMA 7% + Alginato 1.5%</div></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Presion opt.</div><div class="text-xl font-bold mt-1" id="bio-pres">--</div><div class="text-[10px] text-slate-500">kPa</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Viabilidad</div><div class="text-xl font-bold mt-1" id="bio-via">--</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">WSS</div><div class="text-xl font-bold mt-1" id="bio-wss">--</div><div class="text-[10px] text-slate-500">dyn/cm2</div></div>
+        <div class="card p-4"><div class="text-[10px] text-slate-500 uppercase">Pareto sol.</div><div class="text-xl font-bold mt-1" id="bio-pareto">--</div></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Frente de Pareto: Presion vs Viabilidad</div><div style="height:300px"><canvas id="chart-bio-scatter"></canvas></div></div>
+        <div class="card p-5"><div class="text-sm font-semibold mb-3">Curva Presion-Viabilidad</div><div style="height:300px"><canvas id="chart-bio-curve"></canvas></div></div>
+    </div>
+</div>
+
+<!-- ─── PAGE: HISTORY ─── -->
+<div id="page-history" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="mb-6"><h1 class="text-xl font-bold">Historial de Simulaciones</h1><p class="text-xs text-slate-400 mt-1">Ultimas ejecuciones registradas en la base de datos</p></header>
+    <button onclick="loadHistory()" class="btn-secondary mb-4 flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Actualizar</button>
+    <div id="history-table" class="card overflow-hidden">
+        <table class="w-full text-sm">
+            <thead><tr class="border-b border-border text-left text-[10px] text-slate-500 uppercase">
+                <th class="px-4 py-3">ID</th><th class="px-4 py-3">Fecha</th><th class="px-4 py-3">Modulo</th><th class="px-4 py-3">Estado</th><th class="px-4 py-3">Duracion</th>
+            </tr></thead>
+            <tbody id="history-body"><tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Cargando...</td></tr></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ─── PAGE: CONSOLE ─── -->
+<div id="page-console" class="page hidden p-6 lg:p-8 fade-in">
+    <header class="mb-6 flex items-center justify-between">
+        <div><h1 class="text-xl font-bold">Consola del Motor Biofisico</h1><p class="text-xs text-slate-400 mt-1">Log en tiempo real del framework BioKidney</p></div>
+        <button onclick="clearConsole()" class="btn-secondary flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i> Limpiar</button>
+    </header>
+    <div class="card p-4 font-mono text-xs overflow-y-auto" style="height: calc(100vh - 200px)" id="full-console">
+        <p class="console-line text-slate-500">Motor BioKidney AI v2026.2.0 — listo</p>
+    </div>
+</div>
+
+</main>
+</div>
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+// ── State ──
+let charts = {};
+let consoleLines = [];
+const API = '';
+
+// ── Navigation ──
+function navigate(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const el = document.getElementById('page-' + page);
+    if (el) { el.classList.remove('hidden'); el.classList.add('fade-in'); }
+    const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
+    if (nav) nav.classList.add('active');
+    if (page === 'history') loadHistory();
+}
+
+// ── Console Logging ──
+function log(msg, type = 'info', target = 'dash-console') {
+    const time = new Date().toLocaleTimeString('es-CO', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const colors = { info: 'text-slate-400', success: 'text-emerald-400 font-medium', error: 'text-red-400', warn: 'text-amber-400', system: 'text-blue-400' };
+    const html = `<p class="console-line"><span class="text-slate-600">[${time}]</span> <span class="${colors[type]||colors.info}">${msg}</span></p>`;
+    [target, 'full-console'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.insertAdjacentHTML('beforeend', html); el.scrollTop = el.scrollHeight; }
+    });
+}
+
+function clearConsole() {
+    ['dash-console', 'full-console'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<p class="console-line text-slate-500">Consola limpiada</p>';
+    });
+}
+
+// ── Badge helper ──
+function badge(status) {
+    const map = { 'OPTIMO': 'badge-optimal', 'FUNCIONAL': 'badge-functional', 'PARCIAL': 'badge-warning', 'REVISAR': 'badge-error', 'INSUFICIENTE': 'badge-error', 'HIPOXIA': 'badge-error', 'POLIURIA': 'badge-warning' };
+    return map[status] || 'badge-functional';
+}
+
+function setBadge(id, status) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = status; el.className = 'badge ' + badge(status) + (id.includes('text-base') ? ' text-base px-4 py-1.5' : ''); }
+}
+
+// ── API Calls ──
+async function apiPost(endpoint, params = {}) {
+    const res = await fetch(API + endpoint, {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ params })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+}
+
+// ── Destroy chart helper ──
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+// ── Chart defaults ──
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = '#1e293b';
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 12;
+
+// ── Run individual module ──
+async function runModule(mod) {
+    const btn = document.getElementById('btn-' + mod);
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span> Simulando...'; }
+    log(`Iniciando simulacion: ${mod.toUpperCase()}...`, 'system');
+    try {
+        const params = getModuleParams(mod);
+        const data = await apiPost(`/api/simulate/${mod}`, params);
+        log(`${mod.toUpperCase()} completado en ${data.duration_ms}ms`, 'success');
+        updateModuleUI(mod, data);
+    } catch (e) {
+        log(`Error en ${mod}: ${e.message}`, 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> Simular'; lucide.createIcons(); }
+    }
+}
+
+function getModuleParams(mod) {
+    const g = id => { const e = document.getElementById(id); return e ? parseFloat(e.value) : null; };
+    switch(mod) {
+        case 'vascular': return { n_seeds: g('p-vasc-seeds'), murray_exponent: g('p-vasc-murray') };
+        case 'filtration': return { pgc: g('p-filt-pgc'), pi_gc: g('p-filt-pigc'), n_glomerulos: g('p-filt-nglom') };
+        case 'reabsorption': return { gfr_input: g('p-reabs-gfr'), aldosterone_factor: g('p-reabs-aldo'), adh_factor: g('p-reabs-adh') };
+        case 'oxygen': return { grid_size: g('p-oxy-grid'), p_art_o2: g('p-oxy-part'), max_iter: g('p-oxy-iter') };
+        case 'ipsc': return { t_end: g('p-ipsc-days') };
+        case 'bioprinting': return { n_particles: g('p-bio-particles') };
+        default: return {};
+    }
+}
+
+// ── Full Pipeline ──
+async function runFullPipeline() {
+    const btn = document.getElementById('btn-pipeline');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span> Ejecutando...';
+    log('Pipeline completo iniciado — 6 modulos en secuencia', 'system');
+
+    try {
+        const data = await apiPost('/api/simulate', {});
+        log(`Pipeline completado en ${data.duration_ms}ms — Estado: ${data.global_status}`, 'success');
+
+        // Update dashboard cards
+        const s = data.summary;
+        updateDashboard(data);
+
+        // Update each module UI
+        if (data.vascular) updateModuleUI('vascular', data.vascular);
+        if (data.filtration) updateModuleUI('filtration', data.filtration);
+        if (data.reabsorption) updateModuleUI('reabsorption', data.reabsorption);
+        if (data.oxygen) updateModuleUI('oxygen', data.oxygen);
+        if (data.ipsc) updateModuleUI('ipsc', data.ipsc);
+        if (data.bioprinting) updateModuleUI('bioprinting', data.bioprinting);
+
+    } catch (e) {
+        log(`Error en pipeline: ${e.message}`, 'error');
+    } finally {
+        btn.disabled = false; btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> Pipeline Completo'; lucide.createIcons();
+    }
+}
+
+function updateDashboard(data) {
+    const s = data.summary;
+    const ms = data.modules_status;
+
+    document.getElementById('dash-global-badge').textContent = data.global_status;
+    document.getElementById('dash-global-badge').className = 'badge ' + badge(data.global_status);
+
+    setText('dash-vasc-seg', data.vascular?.n_segments?.toLocaleString());
+    setText('dash-vasc-murray', data.vascular?.murray_compliance_pct + '%');
+    setBadgeEl('dash-vasc-badge', ms.vascular);
+
+    setText('dash-filt-tfg', s.tfg?.toFixed(2) + ' <span class="text-xs font-normal text-slate-500">mL/min</span>');
+    setText('dash-filt-pct', data.filtration?.pct_native + '%');
+    setBadgeEl('dash-filt-badge', ms.filtration);
+
+    setText('dash-reabs-urine', s.urine?.toFixed(3) + ' <span class="text-xs font-normal text-slate-500">mL/min</span>');
+    setText('dash-reabs-pct', s.reabs_pct + '%');
+    setBadgeEl('dash-reabs-badge', ms.reabsorption);
+
+    setText('dash-oxy-min', data.oxygen?.po2_min + ' <span class="text-xs font-normal text-slate-500">mmHg</span>');
+    setText('dash-oxy-hyp', s.hypoxia_pct + '%');
+    setBadgeEl('dash-oxy-badge', ms.oxygen);
+
+    setText('dash-ipsc-apt', s.ipsc_apt ? '3/3' : '?/3');
+    setText('dash-ipsc-purity', data.ipsc?.protocols?.[0]?.peak_purity_pct + '%');
+    setBadgeEl('dash-ipsc-badge', ms.ipsc);
+
+    setText('dash-bio-via', s.viability_pct + '%');
+    setText('dash-bio-pres', data.bioprinting?.optimal_pressure_kPa + ' <span class="text-xs font-normal text-slate-500">kPa</span>');
+    setBadgeEl('dash-bio-badge', ms.bioprinting);
+
+    // Summary chart
+    drawDashSummaryChart(data);
+}
+
+function setText(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
+function setBadgeEl(id, status) { const el = document.getElementById(id); if (el) { el.textContent = status; el.className = 'badge ' + badge(status); } }
+
+// ── Module UI Updates ──
+function updateModuleUI(mod, d) {
+    switch(mod) {
+        case 'vascular': updateVascularUI(d); break;
+        case 'filtration': updateFiltrationUI(d); break;
+        case 'reabsorption': updateReabsorptionUI(d); break;
+        case 'oxygen': updateOxygenUI(d); break;
+        case 'ipsc': updateIpscUI(d); break;
+        case 'bioprinting': updateBioprintingUI(d); break;
+    }
+}
+
+function updateVascularUI(d) {
+    setText('vasc-seg', d.n_segments?.toLocaleString());
+    setText('vasc-murray', d.murray_compliance_pct + '%');
+    setText('vasc-rmin', d.radius_range_um?.min + ' um');
+    setText('vasc-rmax', d.radius_range_um?.max + ' um');
+    setBadgeEl('vasc-status', d.status);
+
+    destroyChart('vasc-radii');
+    charts['vasc-radii'] = new Chart(document.getElementById('chart-vasc-radii'), {
+        type: 'bar', data: { labels: d.radius_distribution.labels, datasets: [{ label: 'Segmentos', data: d.radius_distribution.counts, backgroundColor: 'rgba(239,68,68,0.6)', borderColor: 'rgba(239,68,68,1)', borderWidth: 1 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Radio (um)' }}, y: { title: { display: true, text: 'Cantidad' }}}}
+    });
+    destroyChart('vasc-levels');
+    charts['vasc-levels'] = new Chart(document.getElementById('chart-vasc-levels'), {
+        type: 'bar', data: { labels: d.level_distribution.labels, datasets: [{ label: 'Segmentos', data: d.level_distribution.counts, backgroundColor: 'rgba(239,68,68,0.4)', borderColor: 'rgba(239,68,68,0.8)', borderWidth: 1 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Nivel jerarquico' }}, y: { title: { display: true, text: 'Cantidad' }}}}
+    });
+}
+
+function updateFiltrationUI(d) {
+    setText('filt-tfg', d.tfg_mL_min);
+    setText('filt-ff', d.ff_mean_pct + '%');
+    setText('filt-dp', d.dp_starling_mean);
+    setText('filt-pct', d.pct_native + '%');
+    setBadgeEl('filt-status', d.status);
+
+    const pp = d.pressure_profile;
+    destroyChart('filt-starling');
+    charts['filt-starling'] = new Chart(document.getElementById('chart-filt-starling'), {
+        type: 'line', data: { labels: pp.x.filter((_,i) => i%5===0).map(v => v.toFixed(0) + '%'),
+        datasets: [
+            { label: 'P hidrost. neta', data: pp.p_hidrostatic.filter((_,i) => i%5===0), borderColor: '#f59e0b', borderDash: [5,3], pointRadius: 0, borderWidth: 2 },
+            { label: 'Pi oncotica', data: pp.pi_oncotic.filter((_,i) => i%5===0), borderColor: '#a855f7', pointRadius: 0, borderWidth: 2 },
+            { label: 'dP Starling', data: pp.dp_starling.filter((_,i) => i%5===0), borderColor: '#3b82f6', pointRadius: 0, borderWidth: 2.5, fill: { target: 'origin', above: 'rgba(59,130,246,0.1)' }},
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Posicion capilar' }}, y: { title: { display: true, text: 'Presion (mmHg)' }}}}
+    });
+
+    const tc = d.tfg_curve;
+    destroyChart('filt-curve');
+    charts['filt-curve'] = new Chart(document.getElementById('chart-filt-curve'), {
+        type: 'line', data: { labels: tc.p_arterial.map(v => v.toFixed(0)),
+        datasets: [
+            { label: 'TFG', data: tc.tfg, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', fill: true, pointRadius: 0, borderWidth: 2.5 },
+        ]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { annotation: {} },
+            scales: { x: { title: { display: true, text: 'P arterial (mmHg)' }}, y: { title: { display: true, text: 'TFG (mL/min)' }}}}
+    });
+
+    const th = d.tfg_histogram;
+    destroyChart('filt-hist');
+    charts['filt-hist'] = new Chart(document.getElementById('chart-filt-hist'), {
+        type: 'bar', data: { labels: th.centers.map(v => v.toFixed(1)), datasets: [{ label: 'Glomerulos', data: th.counts, backgroundColor: 'rgba(59,130,246,0.5)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'TFG por glomerulo (nL/min)' }}, y: { title: { display: true, text: 'N glomerulos' }}}}
+    });
+}
+
+function updateReabsorptionUI(d) {
+    setText('reabs-urine', d.urine_vol_mL_min);
+    setText('reabs-lday', d.urine_vol_L_day);
+    setText('reabs-pct', d.reabs_pct + '%');
+    setText('reabs-osm', d.urine_osm);
+    setBadgeEl('reabs-status', d.status);
+
+    const wf = d.vol_waterfall;
+    const segColors = ['#94a3b8', '#06b6d4', '#8b5cf6', '#ef4444', '#22c55e', '#f59e0b'];
+    destroyChart('reabs-waterfall');
+    charts['reabs-waterfall'] = new Chart(document.getElementById('chart-reabs-waterfall'), {
+        type: 'bar', data: { labels: wf.labels, datasets: [{ label: 'Volumen (mL/min)', data: wf.values, backgroundColor: segColors, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'mL/min' }, type: 'logarithmic' }}}
+    });
+
+    const op = d.osm_profile;
+    destroyChart('reabs-osm');
+    charts['reabs-osm'] = new Chart(document.getElementById('chart-reabs-osm'), {
+        type: 'line', data: { labels: op.labels, datasets: [{ label: 'Osmolaridad', data: op.values, borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)', fill: true, pointRadius: 4, pointBackgroundColor: '#a855f7', borderWidth: 2.5, tension: 0.3 }] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { title: { display: true, text: 'mOsm/kg' }}}}
+    });
+
+    // Transporter chart
+    const allTransporters = [];
+    const allValues = [];
+    const allColors = [];
+    const tColors = { TP: '#06b6d4', AHD: '#8b5cf6', AHA: '#ef4444', TD: '#22c55e', TC: '#f59e0b' };
+    d.segments.forEach(seg => {
+        Object.entries(seg.transporters).forEach(([name, val]) => {
+            allTransporters.push(name + ' (' + seg.abbr + ')');
+            allValues.push(val);
+            allColors.push(tColors[seg.abbr] || '#94a3b8');
+        });
+    });
+    destroyChart('reabs-transport');
+    charts['reabs-transport'] = new Chart(document.getElementById('chart-reabs-transport'), {
+        type: 'bar', data: { labels: allTransporters, datasets: [{ label: 'Saturacion %', data: allValues, backgroundColor: allColors.map(c => c + '99'), borderColor: allColors, borderWidth: 1 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Saturacion (%)' }, max: 110 }}}
+    });
+}
+
+function updateOxygenUI(d) {
+    setText('oxy-min', d.po2_min);
+    setText('oxy-mean', d.po2_mean);
+    setText('oxy-hyp', d.hypoxia_pct + '%');
+    setText('oxy-iters', d.iterations);
+    setBadgeEl('oxy-status', d.status);
+
+    const h = d.po2_histogram;
+    destroyChart('oxy-hist');
+    charts['oxy-hist'] = new Chart(document.getElementById('chart-oxy-hist'), {
+        type: 'bar', data: { labels: h.centers.map(v => v.toFixed(1)), datasets: [{ label: 'Voxeles', data: h.counts, backgroundColor: 'rgba(6,182,212,0.5)', borderColor: 'rgba(6,182,212,1)', borderWidth: 1 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'PO2 (mmHg)' }}, y: { title: { display: true, text: 'Voxeles' }}}}
+    });
+
+    const cs = d.cross_section;
+    destroyChart('oxy-cross');
+    charts['oxy-cross'] = new Chart(document.getElementById('chart-oxy-cross'), {
+        type: 'line', data: { labels: cs.x, datasets: [{ label: 'PO2', data: cs.po2, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', fill: true, pointRadius: 0, borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Posicion (voxel)' }}, y: { title: { display: true, text: 'PO2 (mmHg)' }}}}
+    });
+}
+
+function updateIpscUI(d) {
+    setText('ipsc-apt', d.all_protocols_apt ? '3/3' : '?/3');
+    setBadgeEl('ipsc-status', d.status);
+
+    const prots = d.protocols;
+
+    // Purity chart
+    destroyChart('ipsc-purity');
+    charts['ipsc-purity'] = new Chart(document.getElementById('chart-ipsc-purity'), {
+        type: 'line', data: { labels: prots[0].time,
+        datasets: prots.map(p => ({ label: p.label, data: p.purity, borderColor: p.color, pointRadius: 0, borderWidth: 2.5, tension: 0.2 })).concat([
+            { label: '95% objetivo', data: prots[0].time.map(() => 95), borderColor: '#f59e0b', borderDash: [5,3], pointRadius: 0, borderWidth: 1 }
+        ])},
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Dias' }}, y: { title: { display: true, text: 'Pureza (%)' }, max: 105 }}}
+    });
+
+    // Teratoma chart
+    destroyChart('ipsc-teratoma');
+    charts['ipsc-teratoma'] = new Chart(document.getElementById('chart-ipsc-teratoma'), {
+        type: 'line', data: { labels: prots[0].time,
+        datasets: prots.map(p => ({ label: p.label, data: p.teratoma, borderColor: p.color, pointRadius: 0, borderWidth: 2, tension: 0.2 }))},
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Dias' }}, y: { title: { display: true, text: 'iPSC residual (%)' }, type: 'logarithmic' }}}
+    });
+
+    // Protocol cards
+    const container = document.getElementById('ipsc-protocols-cards');
+    container.innerHTML = prots.map(p => `
+        <div class="card p-5" style="border-left: 3px solid ${p.color}">
+            <div class="text-sm font-bold" style="color:${p.color}">${p.label}</div>
+            <div class="text-[10px] text-slate-500 mb-3">${p.function}</div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><div class="text-[10px] text-slate-500">Pureza pico</div><div class="text-lg font-bold">${p.peak_purity_pct}%</div></div>
+                <div><div class="text-[10px] text-slate-500">Ventana >95%</div><div class="text-sm font-semibold mt-1">${p.window_95 ? 'Dias ' + p.window_95[0] + '-' + p.window_95[1] : 'N/A'}</div></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateBioprintingUI(d) {
+    setText('bio-pres', d.optimal_pressure_kPa);
+    setText('bio-via', d.optimal_viability_pct + '%');
+    setText('bio-wss', d.wss_dyncm2);
+    setText('bio-pareto', d.pareto_count);
+    setText('bio-ink', d.bioink);
+    setBadgeEl('bio-status', d.status);
+
+    const sc = d.scatter;
+    destroyChart('bio-scatter');
+    const paretoData = [], nonParetoData = [];
+    for (let i = 0; i < sc.pressures.length; i++) {
+        const pt = { x: sc.pressures[i], y: sc.viabilities[i] };
+        (sc.is_pareto[i] ? paretoData : nonParetoData).push(pt);
+    }
+    charts['bio-scatter'] = new Chart(document.getElementById('chart-bio-scatter'), {
+        type: 'scatter', data: { datasets: [
+            { label: 'Pareto', data: paretoData, backgroundColor: 'rgba(245,158,11,0.8)', borderColor: '#f59e0b', pointRadius: 5 },
+            { label: 'Dominadas', data: nonParetoData, backgroundColor: 'rgba(148,163,184,0.3)', borderColor: '#475569', pointRadius: 3 },
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Presion (kPa)' }}, y: { title: { display: true, text: 'Viabilidad (%)' }}}}
+    });
+
+    const pv = d.pv_curve;
+    destroyChart('bio-curve');
+    charts['bio-curve'] = new Chart(document.getElementById('chart-bio-curve'), {
+        type: 'line', data: { labels: pv.pressure, datasets: [
+            { label: 'Viabilidad', data: pv.viability, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.08)', fill: true, pointRadius: 0, borderWidth: 2.5 },
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Presion (kPa)' }}, y: { title: { display: true, text: 'Viabilidad (%)' }}}}
+    });
+}
+
+// ── Dashboard Summary Chart ──
+function drawDashSummaryChart(data) {
+    const ms = data.modules_status;
+    const labels = ['Vascular', 'Filtracion', 'Reabsorcion', 'Oxigeno', 'iPSC', 'Bioprinting'];
+    const scores = labels.map((_, i) => {
+        const k = Object.keys(ms)[i];
+        return ms[k] === 'OPTIMO' ? 100 : ms[k] === 'FUNCIONAL' ? 75 : ms[k] === 'PARCIAL' ? 50 : 25;
+    });
+    const colors = ['#ef4444', '#3b82f6', '#a855f7', '#06b6d4', '#22c55e', '#f59e0b'];
+
+    destroyChart('dash-summary');
+    charts['dash-summary'] = new Chart(document.getElementById('chart-dash-summary'), {
+        type: 'radar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Estado (%)',
+                data: scores,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.15)',
+                borderWidth: 2,
+                pointBackgroundColor: colors,
+                pointBorderColor: colors,
+                pointRadius: 5,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, backdropColor: 'transparent' }, grid: { color: '#1e293b' }, pointLabels: { color: '#94a3b8', font: { size: 11 }}}},
+            plugins: { legend: { display: false } }
         }
-    </script>
+    });
+}
+
+// ── History ──
+async function loadHistory() {
+    try {
+        const res = await fetch(API + '/api/history');
+        const data = await res.json();
+        const body = document.getElementById('history-body');
+        if (!data.length) { body.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Sin registros</td></tr>'; return; }
+        body.innerHTML = data.map(r => `
+            <tr class="border-b border-border/50 hover:bg-white/[0.02]">
+                <td class="px-4 py-3 font-mono text-xs text-slate-500">#${r.id}</td>
+                <td class="px-4 py-3 text-xs">${r.timestamp ? new Date(r.timestamp).toLocaleString('es-CO') : '-'}</td>
+                <td class="px-4 py-3 text-xs font-medium">${r.type || '-'}</td>
+                <td class="px-4 py-3"><span class="badge ${badge(r.status)}">${r.status || '-'}</span></td>
+                <td class="px-4 py-3 text-xs font-mono">${r.duration_ms ? r.duration_ms.toFixed(1) + 'ms' : '-'}</td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        document.getElementById('history-body').innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-red-400">Error: ' + e.message + '</td></tr>';
+    }
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    log('Motor BioKidney AI v2026.2.0 inicializado', 'system');
+    log('6 modulos disponibles: Vascular, Filtracion, Reabsorcion, O2, iPSC, Bioprinting', 'info');
+    log('Listo para simulacion. Ejecute el Pipeline Completo o seleccione un modulo.', 'info');
+});
+</script>
 </body>
 </html>

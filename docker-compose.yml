@@ -1,13 +1,25 @@
-version: '3.8'
-
 services:
   biokidney-platform:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: biokidney-ai
     ports:
       - "8000:8000"
     volumes:
-      - ./web_app/database:/app/web_app/database
-      - ./web_app/logs:/app/web_app/logs
+      - biokidney-db:/app/web_app/database
+      - biokidney-logs:/app/web_app/logs
     environment:
-      - DATABASE_URL=sqlite:///web_app/database/biokidney.db
-    restart: always
+      - DATABASE_URL=sqlite:////app/web_app/database/biokidney.db
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/system/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  biokidney-db:
+  biokidney-logs:
