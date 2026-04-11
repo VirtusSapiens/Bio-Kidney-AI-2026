@@ -292,20 +292,55 @@ gelation: liquid below 4C, gel above 10C.
 | Flow rate for removal | 0.5 mL/min per vessel inlet |
 | Verification | Fluorescent dye perfusion (FITC-dextran 70 kDa) |
 
-**Lumen evacuation sequence:**
-1. Transfer printed construct to 4C environment immediately post-print
-2. Connect inlet (Zone A vessel) to syringe pump loaded with cold PBS
-3. Perfuse at 0.5 mL/min for 10 minutes
-4. Verify lumen patency: inject FITC-dextran 70 kDa solution
-5. Confirm fluorescent signal propagates to Zone D terminals
-6. If blockage detected: increase perfusion to 1.0 mL/min for 5 min
+**Lumen evacuation sequence (v1.1 — corrected):**
+
+CRITICAL: Do NOT transfer directly from 37C to 4C. Thermal shock causes
+GelMA contraction and microfractures at zone interfaces.
+
+Controlled thermal gradient protocol:
+1. Reduce incubator from 37C to 22C over 20 minutes (0.75C/min)
+2. Hold at 22C for 10 minutes (Pluronic begins softening)
+3. Reduce from 22C to 10C over 15 minutes (0.8C/min)
+4. Hold at 10C for 5 minutes
+5. Reduce from 10C to 4C over 5 minutes (1.2C/min)
+6. Total cooling time: ~55 minutes
+
+Perfusion protocol (pressure-controlled — NEVER exceed 43 mmHg):
+- Connect inlet (Zone A vessel) to pressure-controlled syringe pump
+- Load with cold PBS 4C supplemented with Penicillin/Streptomycin 1%
+- Set maximum perfusion pressure: 35 mmHg (safety margin below 43 mmHg)
+- Flow rate: 0.3 mL/min initial (gravity-assisted preferred)
+- Duration: 30-60 minutes depending on construct size
+- Monitor outlet flow rate — if flow stops, DO NOT increase pressure
+  (indicates blockage — see troubleshooting below)
+
+Hydraulic water hammer prevention:
+- Never apply sudden pressure changes at any zone junction
+- All pressure ramps must be gradual: maximum 5 mmHg per 30 seconds
+- If Pluronic viscosity causes resistance: wait 10 additional minutes
+  at 4C before retrying — do not compensate with higher pressure
+
+Troubleshooting:
+- No flow at Zone B outlet: Pluronic incompletely liquefied — extend
+  cooling time 15 minutes and retry
+- No flow at Zone C outlet: Potential blockage — reduce pressure to
+  20 mmHg and perfuse for additional 20 minutes
+- Zone D terminals not reached: Repeat full evacuation sequence once
+  If second attempt fails, construct is non-viable for filtration
+
+Patency verification:
+- Inject FITC-dextran 70 kDa in PBS at 30 mmHg input pressure
+- Target: fluorescent signal in >90% of Zone D terminals within 5 min
+- >85% acceptable (literature standard, Jennifer Lewis Harvard group)
+- <85%: construct fails Zone C bottleneck — do not proceed to maturation
 
 **Critical note — Zone C bottleneck:**
-Zone C (pre-glomerular arterioles, 50-175 um) is the pressure-critical
-zone. If Pluronic removal is incomplete here, residual gel will block
-flow and terminal pressures will drop below the 43 mmHg Starling threshold,
-eliminating filtration regardless of bioink quality. Zone C patency
-verification is MANDATORY before proceeding to maturation.
+Zone C is the pressure-critical gateway. Any blockage here drops terminal
+pressures below 43 mmHg, eliminating Starling filtration regardless of
+bioink or cell quality. Monitor outlet flow continuously during evacuation.
+A sudden pressure increase at the inlet when outlet flow stops indicates
+a hydraulic water hammer risk — stop immediately and allow 10 minutes
+passive equilibration before retrying.
 
 ---
 
@@ -372,6 +407,24 @@ varies by zone to match the resolution requirements:
 
 **Total estimated print time:** 18-24 hours for a full kidney construct
 (11 x 6 x 5 cm) on a multi-nozzle bioprinter.
+
+**Cell viability during extended print — critical consideration:**
+Maintaining cells in bioink cartridges for 18-24 hours at 22C causes
+progressive metabolic stress and viability decline. Two mitigation
+strategies are recommended:
+
+Option A — Segmented printing (preferred):
+- Print Zone A and B vessels on Day 1 (scaffold only, no cells)
+- Refrigerate construct at 4C overnight
+- Cell-seed Zones A and B by perfusion on Day 2 morning
+- Print Zones C and D with cells on Day 2 (6-8 hours, cells fresh)
+- Advantage: cells never spend more than 8 hours in cartridge
+
+Option B — Active cartridge refrigeration:
+- Maintain bioink cartridges at 4C during printing
+- Warm to print temperature only at nozzle tip (heated nozzle cap)
+- Slows cell metabolism, extends viability window to 18-20 hours
+- Requires bioprinter with independently temperature-controlled cartridges
 
 ### 2.4 Pareto Front Operating Points by Zone
 
@@ -453,16 +506,213 @@ must pass the following structural checkpoints:
 
 ---
 
-## Status: Layers 1-2 Complete
+
+---
+
+## Layer 3: iPSC Differentiation to Maturation Schedule
+
+### 3.1 Overview
+
+Layer 3 translates the computational iPSC differentiation kinetics model
+(Takasato 2015 protocol, 30-day simulation) into a laboratory maturation
+schedule. The simulation predicts full phenotypic purity across three
+renal lineages by day 21, with OCT4 residual below 0.1%. This layer
+converts those predictions into actionable culture conditions, media
+changes, and verification checkpoints.
+
+The printed construct at this stage has patent lumens (verified by
+FITC-dextran), structural integrity (passed Layer 2 checkpoints), but
+contains cells that have not yet differentiated into their final renal
+phenotypes. Maturation is the process by which iPSCs and progenitor
+cells become functional podocytes, proximal tubule cells, and loop of
+Henle cells under controlled biochemical and mechanical stimulation.
+
+### 3.2 Pre-Maturation Requirements
+
+Before initiating the maturation protocol, verify:
+
+| Requirement | Verification method | Minimum threshold |
+|-------------|--------------------|--------------------|
+| Lumen patency | FITC-dextran perfusion | >90% Zone D terminals |
+| Cell viability post-print | Live/dead confocal | >90% viable |
+| Structural integrity | Compression test | >80% shape recovery |
+| Sterility | Culture medium turbidity | No turbidity at 48h |
+| OCT4 baseline | Immunofluorescence | Record initial value |
+
+If any requirement is not met, do not proceed. The maturation protocol
+cannot rescue a structurally compromised construct.
+
+### 3.3 Bioreactor Configuration
+
+The printed kidney construct requires perfusion culture in a closed
+bioreactor system that simultaneously provides:
+- Nutrient delivery via vascular perfusion
+- Mechanical stimulation (pulsatile flow mimicking renal blood flow)
+- Biochemical gradient (differentiation media at controlled concentration)
+- Waste removal via collecting system outlet
+
+**Recommended bioreactor parameters:**
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| Perfusion flow rate | 0.5-2.0 mL/min | Renal blood flow scaled to construct |
+| Inlet pressure | 80 mmHg systolic / 50 mmHg diastolic | Physiological renal artery pressure |
+| Pulsation frequency | 60-80 cycles/min | Normal heart rate |
+| Temperature | 37C | Physiological |
+| CO2 | 5% | pH maintenance |
+| O2 | 21% (normoxic) | Prevent hypoxic stress during maturation |
+| Media change | Every 48 hours | Maintain growth factor concentrations |
+
+### 3.4 Maturation Timeline — 30-Day Protocol
+
+The simulation predicts three distinct phases of differentiation kinetics,
+each requiring specific media formulations and mechanical conditions:
+
+---
+
+#### PHASE 1: Intermediate Mesoderm Induction (Days 1-7)
+**Simulation prediction:** Rapid decline in OCT4 (pluripotency marker),
+activation of OSR1 and PAX2 (intermediate mesoderm markers).
+**Target by day 7:** OCT4 < 20% of baseline, PAX2 > 60% expression.
+
+**Media formulation — Phase 1:**
+| Component | Concentration | Role |
+|-----------|--------------|------|
+| RPMI 1640 base | Standard | Basal medium |
+| B27 supplement (minus insulin) | 1x | Cell survival |
+| CHIR99021 (GSK3 inhibitor) | 8 uM days 1-3, then 5 uM | WNT activation |
+| FGF9 | 200 ng/mL | Mesoderm patterning |
+| Heparin | 1 ug/mL | FGF9 stabilization |
+
+**Mechanical protocol — Phase 1:**
+- Perfusion: 0.5 mL/min constant (no pulsation)
+- Rationale: Cells are transitioning — avoid mechanical stress
+
+**Verification checkpoint — Day 7:**
+- Immunofluorescence: PAX2+/WT1+ cells > 50% of total
+- OCT4 < 25% of day 0 baseline
+- No visible necrotic zones in confocal imaging
+- If checkpoint fails: extend Phase 1 by 3 days with CHIR99021 at 3 uM
+
+---
+
+#### PHASE 2: Nephron Progenitor Expansion (Days 8-14)
+**Simulation prediction:** Emergence of three distinct progenitor
+populations. PAX2/WT1 double-positive cells peak at day 10-12.
+**Target by day 14:** Three lineage-committed populations detectable.
+
+**Media formulation — Phase 2:**
+| Component | Concentration | Role |
+|-----------|--------------|------|
+| RPMI 1640 + B27 | Standard | Base |
+| FGF9 | 200 ng/mL | Continued mesoderm support |
+| Activin A | 10 ng/mL | Podocyte lineage bias |
+| BMP7 | 25 ng/mL | Tubular lineage induction |
+| VEGF-A | 50 ng/mL | Endothelial survival and migration |
+
+**Mechanical protocol — Phase 2:**
+- Perfusion: increase to 1.0 mL/min
+- Begin pulsatile flow: 0.8 mL/min baseline + 0.4 mL/min pulse
+- Pulse frequency: 60 cycles/min
+- Rationale: Mechanical stimulation enhances nephron patterning
+
+**Verification checkpoint — Day 14:**
+- Flow cytometry: NPHS1+ (podocyte), LRP2+ (PT), UMOD+ (LoH) all detectable
+- Vascular integrity: repeat FITC-dextran perfusion (>85% patency)
+- Cell density: no significant reduction from post-print count
+- If checkpoint fails: increase VEGF-A to 100 ng/mL for 3 additional days
+
+---
+
+#### PHASE 3: Terminal Differentiation and Functional Maturation (Days 15-30)
+**Simulation prediction:** Phenotypic purity >95% for all three lineages
+by day 15, reaching 100% by day 21. OCT4 below 0.1% by day 21.
+**Target by day 21:** Full lineage commitment. Days 22-30: functional maturation.
+
+**Media formulation — Phase 3A (Days 15-21):**
+| Component | Concentration | Role |
+|-----------|--------------|------|
+| DMEM/F12 + B27 | Standard | Maturation base |
+| Oncostatin M | 20 ng/mL | Podocyte maturation |
+| Dexamethasone | 1 uM | Tubular transport induction |
+| Aldosterone | 10 nM | ENaC and AQP2 expression |
+| ADH (vasopressin) | 1 nM | Collecting duct maturation |
+| Creatinine | 100 uM | Tubular secretion stimulus |
+
+**Media formulation — Phase 3B (Days 22-30):**
+| Component | Concentration | Role |
+|-----------|--------------|------|
+| DMEM/F12 + B27 | Standard | Maturation base |
+| Albumin | 4 g/dL | Oncotic pressure simulation |
+| Inulin | 1 mg/mL | GFR measurement marker |
+| Para-aminohippurate | 50 uM | Tubular secretion marker |
+
+**Mechanical protocol — Phase 3:**
+- Perfusion: 1.5-2.0 mL/min pulsatile
+- Inlet pressure: 80/50 mmHg (systolic/diastolic)
+- Rationale: Full physiological pressure loading for functional adaptation
+
+**Critical verification checkpoint — Day 21 (GO/NO-GO decision):**
+
+This is the most important checkpoint in the entire protocol.
+The simulation predicts OCT4 < 0.1% by day 21. If this is not achieved,
+teratoma risk is unacceptable and the construct must be discarded.
+
+| Marker | Target | Method | GO threshold |
+|--------|--------|--------|-------------|
+| OCT4 | < 0.1% | qPCR + IF | < 0.1% — NO exceptions |
+| NPHS1 (podocyte) | > 95% purity | Flow cytometry | > 90% |
+| LRP2 (proximal tubule) | > 95% purity | Flow cytometry | > 90% |
+| UMOD (loop of Henle) | > 95% purity | Flow cytometry | > 90% |
+| Ki67 (proliferation) | < 5% | Immunofluorescence | < 10% |
+
+If OCT4 > 0.1%: DISCARD construct. Do not proceed to functional testing.
+If lineage purities 85-90%: Extend Phase 3A by 5 days before re-testing.
+If lineage purities < 85%: DISCARD construct.
+
+**Final verification checkpoint — Day 30:**
+
+| Test | Method | Target |
+|------|--------|--------|
+| GFR spot-test | Inulin clearance | > 80 mL/min bilateral |
+| Tubular reabsorption | Glucose clearance | > 95% reabsorption |
+| Albumin retention | Albumin in outflow | < 30 mg/day (normal range) |
+| Electrolyte balance | Na+/K+ in outflow | Within physiological range |
+| Urine output | Collect duct outflow | 1.5-2.5 L/day equivalent |
+
+### 3.5 Simulation vs. Laboratory Correlation
+
+The following table maps computational predictions to expected laboratory
+measurements, providing a direct validation bridge between Bio-Kidney
+AI 2026 and experimental results:
+
+| Module output (simulation) | Laboratory measurement | Expected correlation |
+|---------------------------|----------------------|---------------------|
+| OCT4 < 0.1% by day 21 | qPCR Ct value > 35 | Direct |
+| NPHS1+ purity 100% | Flow cytometry > 95% | -5% tolerance |
+| GFR 115.2 mL/min | Inulin clearance | 80-120 mL/min range |
+| Reabsorption 98.1% | Glucose fractional excretion | < 2% |
+| Urine output 2.19 L/day | Collecting system volume | 1.8-2.5 L/day |
+| PO2 minimum 5.6 mmHg | Oxygen microsensor | > 4 mmHg threshold |
+
+**Note on GFR tolerance:** The simulation predicts 115.2 mL/min for a
+construct replicating 1,300 glomerular units. A laboratory construct
+with 1,300 glomerular seeds but variable cell seeding efficiency
+(typically 70-85%) is expected to achieve 70-90 mL/min in first
+functional tests — still within CKD Stage 1-2 range and clinically
+meaningful.
+
+---
+
+## Status: Layers 1-3 Complete
 
 | Layer | Title | Status |
 |-------|-------|--------|
 | 1 | Vascular Architecture to Bioink Specification | COMPLETE (v1.1) |
-| 2 | Co-SWIFT Bioprinting Protocol by Zone | COMPLETE |
-| 3 | iPSC Differentiation to Maturation Schedule | PENDING |
+| 2 | Co-SWIFT Bioprinting Protocol by Zone | COMPLETE (v1.1) |
+| 3 | iPSC Differentiation to Maturation Schedule | COMPLETE |
 | 4 | Quality Control and Functional Verification | PENDING |
 
 ---
-*Bio-Kidney AI 2026 — Implementation Protocol v1.1*
+*Bio-Kidney AI 2026 — Implementation Protocol v1.2*
 *Carlos David Moreno Caceres — VirtusSapiens — April 2026*
 *DOI: 10.5281/zenodo.19508077*
