@@ -579,7 +579,7 @@ activation of OSR1 and PAX2 (intermediate mesoderm markers).
 |-----------|--------------|------|
 | RPMI 1640 base | Standard | Basal medium |
 | B27 supplement (minus insulin) | 1x | Cell survival |
-| CHIR99021 (GSK3 inhibitor) | 8 uM days 1-3, then 5 uM | WNT activation |
+| CHIR99021 (GSK3 inhibitor) | 8 uM days 1-4 (96h, Takasato 2015), then 5 uM | WNT activation |
 | FGF9 | 200 ng/mL | Mesoderm patterning |
 | Heparin | 1 ug/mL | FGF9 stabilization |
 
@@ -617,6 +617,7 @@ populations. PAX2/WT1 double-positive cells peak at day 10-12.
 
 **Verification checkpoint — Day 14:**
 - Flow cytometry: NPHS1+ (podocyte), LRP2+ (PT), UMOD+ (LoH) all detectable
+- Optional: GATA3+ or RET+ for collecting duct (ureteric bud) lineage verification
 - Vascular integrity: repeat FITC-dextran perfusion (>85% patency)
 - Cell density: no significant reduction from post-print count
 - If checkpoint fails: increase VEGF-A to 100 ng/mL for 3 additional days
@@ -636,6 +637,7 @@ by day 15, reaching 100% by day 21. OCT4 below 0.1% by day 21.
 | Dexamethasone | 1 uM | Tubular transport induction |
 | Aldosterone | 10 nM | ENaC and AQP2 expression |
 | ADH (vasopressin) | 1 nM | Collecting duct maturation |
+| T3 (Triiodothyronine) | 100 nM | Na+/K+-ATPase maturation in renal tubule |
 | Creatinine | 100 uM | Tubular secretion stimulus |
 
 **Media formulation — Phase 3B (Days 22-30):**
@@ -650,6 +652,9 @@ by day 15, reaching 100% by day 21. OCT4 below 0.1% by day 21.
 - Perfusion: 1.5-2.0 mL/min pulsatile
 - Inlet pressure: 80/50 mmHg (systolic/diastolic)
 - Rationale: Full physiological pressure loading for functional adaptation
+- BAROTRAUMA WARNING: Sensor sensitivity must be +/-1 mmHg. Pressure spikes
+  above 85 mmHg systolic cause podocyte detachment in Zone D (freshly
+  differentiated NPHS1+ cells). Use pressure-regulated pump only.
 
 **Critical verification checkpoint — Day 21 (GO/NO-GO decision):**
 
@@ -703,16 +708,233 @@ meaningful.
 
 ---
 
-## Status: Layers 1-3 Complete
-
-| Layer | Title | Status |
-|-------|-------|--------|
-| 1 | Vascular Architecture to Bioink Specification | COMPLETE (v1.1) |
-| 2 | Co-SWIFT Bioprinting Protocol by Zone | COMPLETE (v1.1) |
-| 3 | iPSC Differentiation to Maturation Schedule | COMPLETE |
-| 4 | Quality Control and Functional Verification | PENDING |
 
 ---
-*Bio-Kidney AI 2026 — Implementation Protocol v1.2*
+
+## Layer 4: Quality Control and Functional Verification
+
+### 4.1 Overview
+
+Layer 4 is the final validation gate before a Bio-Kidney AI 2026 construct
+can be considered a candidate for preclinical testing. It consolidates all
+checkpoints from Layers 1-3 into a GO/NO-GO decision framework and defines
+the complete panel of functional tests.
+
+The simulation established five primary targets:
+1. GFR: 115.2 mL/min (bilateral)
+2. Tubular reabsorption: 98.1% efficiency
+3. Urine output: 2.19 L/day
+4. Zero hypoxic zones (PO2 minimum 5.6 mmHg)
+5. Full iPSC phenotypic purity (OCT4 < 0.1%)
+
+All five must be met or within tolerance for the construct to advance.
+
+---
+
+### 4.2 Quality Control Timeline
+
+| Day | Checkpoint | Critical? |
+|-----|-----------|-----------|
+| Post-print | Lumen patency FITC-dextran >90% | YES |
+| Post-print | Cell viability >90% | YES |
+| Day 7 | PAX2+ >50%, OCT4 <25% baseline | YES |
+| Day 14 | Three lineages detectable | YES |
+| Day 21 | OCT4 <0.1% GO/NO-GO | ABSOLUTE |
+| Day 21 | Lineage purities >90% | YES |
+| Day 30 | Full functional panel | YES |
+
+---
+
+### 4.3 Day 30 Functional Test Panel
+
+#### Test 1: GFR by Inulin Clearance
+- Add inulin 1 mg/mL to perfusion media
+- Collect outflow 60 minutes
+- GFR = (Urine inulin x Urine flow) / Plasma inulin
+
+| Result | Decision |
+|--------|----------|
+| >100 mL/min | GO — excellent |
+| 80-100 mL/min | GO — good |
+| 60-79 mL/min | CONDITIONAL GO |
+| <60 mL/min | NO-GO |
+
+Simulation: 115.2 mL/min | Expected lab: 80-120 mL/min
+
+---
+
+#### Test 2: Tubular Reabsorption (Fractional Glucose Excretion)
+- Perfuse with glucose 100 mg/dL
+- FEGlucose = (Urine glucose / Plasma glucose) x 100%
+
+| FEGlucose | Decision |
+|-----------|----------|
+| <2% | GO |
+| 2-5% | CONDITIONAL GO |
+| >5% | NO-GO |
+
+Simulation: 98.1% reabsorption (FEGlucose ~1.9%)
+
+---
+
+#### Test 3: Albumin Retention (Filtration Barrier)
+- Albumin 4 g/dL in perfusion, collect filtrate 24h
+
+| Albumin in filtrate | Decision |
+|--------------------|----------|
+| <30 mg/day | GO |
+| 30-300 mg/day | CONDITIONAL GO |
+| >300 mg/day | NO-GO |
+
+---
+
+#### Test 4: Urine Output Volume
+| Daily output | Decision |
+|-------------|----------|
+| 1.5-2.5 L/day | GO |
+| 0.5-1.5 L/day | CONDITIONAL GO |
+| <0.5 L/day | NO-GO |
+
+Simulation: 2.19 L/day
+
+---
+
+#### Test 5: Oxygen Distribution
+- Clark-type O2 microsensor at 10 locations
+
+| PO2 minimum | Decision |
+|-------------|----------|
+| >5.6 mmHg | GO |
+| 4.0-5.6 mmHg | CONDITIONAL GO |
+| <4.0 mmHg | NO-GO |
+
+Simulation: Zero hypoxic zones, minimum 5.6 mmHg
+
+---
+
+#### Test 6: Effective Renal Plasma Flow (ERPF)
+- Add PAH (para-aminohippurate) 50 uM to perfusion
+- ERPF = (Urine PAH x Urine flow) / Plasma PAH
+- Target: 400-700 mL/min equivalent (scaled to construct)
+- Rationale: PAH measures total tubular secretory capacity,
+  validating the complete nephron function beyond GFR alone
+
+---
+
+### 4.4 Master GO/NO-GO Decision Table
+
+| Test | Minimum threshold | Day 30 result | Decision |
+|------|------------------|---------------|----------|
+| OCT4 <0.1% (Day 21) | ABSOLUTE | _______ | _______ |
+| GFR >60 mL/min | Critical | _______ | _______ |
+| FEGlucose <5% | Critical | _______ | _______ |
+| Albumin <300 mg/day | Critical | _______ | _______ |
+| Urine output >0.5 L/day | Critical | _______ | _______ |
+| PO2 >4.0 mmHg everywhere | Critical | _______ | _______ |
+| Lumen patency >85% | Structural | _______ | _______ |
+| Lineage purity >90% | Biological | _______ | _______ |
+
+FINAL DECISION: _______
+
+Signature: _________________________ Date: _____________
+Institution: ________________________
+
+---
+
+### 4.5 Failure Analysis
+
+**GFR <60 mL/min:**
+- Check Zone C patency → If <85%: incomplete Pluronic removal
+- Check NPHS1+ purity Day 21 → If <85%: insufficient podocyte differentiation
+- Salvage: Repeat Pluronic evacuation + extend Phase 3A 7 days
+
+**Albumin >300 mg/day:**
+- Check Zone D cell density → Podocyte loss likely
+- Check Day 30 pressure → If >85 mmHg systolic: barotrauma occurred
+- No salvage — discard, document for next iteration
+
+**Hypoxic zones detected:**
+- Map against CCO v8 model
+- Medullary: Zone A-B obstruction → Repeat Pluronic evacuation
+- Cortical: Zone C-D obstruction → Cannot salvage
+- Diffuse: Perfusion pump failure during maturation
+
+---
+
+### 4.6 Validation Report Template
+
+```
+BIO-KIDNEY AI 2026 — CONSTRUCT VALIDATION REPORT
+
+Construct ID: BK-[YEAR]-[NUMBER]
+Fabrication date: _______________
+Maturation completion: _______________
+Researcher: _______________
+Institution: _______________
+
+SIMULATION REFERENCE (DOI: 10.5281/zenodo.19508077):
+CCO v8 segments: 1,902 | Predicted GFR: 115.2 mL/min
+Predicted reabsorption: 98.1% | Predicted urine: 2.19 L/day
+
+FUNCTIONAL RESULTS:
+GFR: ___ mL/min (___% of prediction)
+FEGlucose: ___% | Reabsorption: ___%
+Albumin excretion: ___ mg/day
+Urine output: ___ L/day
+Minimum PO2: ___ mmHg
+ERPF: ___ mL/min
+Lumen patency: ___% Zone D nodes
+
+SAFETY:
+OCT4 Day 21: ___% (qPCR Ct: ___)
+NPHS1+: ___% | LRP2+: ___% | UMOD+: ___%
+
+FINAL CLASSIFICATION:
+[ ] FULL GO — All critical tests passed
+[ ] CONDITIONAL GO — Minor deficiencies, retest after adjustment
+[ ] NO-GO — Critical failure, analyze and redesign
+
+Signature: _______________ Date: _______________
+```
+
+---
+
+### 4.7 Simulation-to-Laboratory Correlation Summary
+
+| Simulation module | Prediction | Lab measurement | Method |
+|------------------|-----------|-----------------|--------|
+| CCO v8 vascular | 1,902 segs, Murray 100% | FITC-dextran patency >85% | Perfusion imaging |
+| Krogh O2 diffusion | PO2 min 5.6 mmHg | Clark microsensor >4 mmHg | Direct mapping |
+| iPSC kinetics | OCT4 <0.1% day 21 | qPCR Ct>35, flow cytometry | Immunophenotyping |
+| Co-SWIFT optimization | 98% viability, 60 Pa | Live/dead >90% | Confocal |
+| Glomerular filtration | GFR 115.2 mL/min | Inulin clearance 80-120 | Clearance test |
+| Tubular reabsorption | 98.1%, 2.19 L/day | FEGlucose <2%, ERPF | Electrode + volume |
+
+When all six correlations are documented in a single construct, the
+validation report constitutes direct experimental evidence that the
+Bio-Kidney AI 2026 computational framework is predictively valid.
+
+---
+
+## PROTOCOL COMPLETE
+
+| Layer | Title | Version | Status |
+|-------|-------|---------|--------|
+| 1 | Vascular Architecture to Bioink Specification | v1.1 | COMPLETE |
+| 2 | Co-SWIFT Bioprinting Protocol by Zone | v1.1 | COMPLETE |
+| 3 | iPSC Differentiation to Maturation Schedule | v1.1 | COMPLETE |
+| 4 | Quality Control and Functional Verification | v1.0 | COMPLETE |
+
+Total estimated protocol pages: ~35 (PDF equivalent)
+Target audience: Bioengineering laboratories with extrusion bioprinter,
+iPSC culture capacity, and perfusion bioreactor.
+Prerequisite: Bio-Kidney AI 2026 computational framework
+(DOI: 10.5281/zenodo.19508077) must be executed first to generate
+patient-specific CCO v8 vascular coordinates.
+
+---
+*Bio-Kidney AI 2026 — Implementation Protocol v1.3 — COMPLETE*
 *Carlos David Moreno Caceres — VirtusSapiens — April 2026*
+*ORCID: 0009-0005-3933-5072*
 *DOI: 10.5281/zenodo.19508077*
+*GitHub: https://github.com/VirtusSapiens/Bio-Kidney-AI-2026*
