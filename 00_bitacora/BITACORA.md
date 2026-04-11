@@ -515,3 +515,122 @@ Bio-Kidney AI 2026 — Validación In Silico Completa
 - Ejecutar `analizador_proyecto_biokidney.py` para generar el `CONTEXTO_PROYECTO.md` final.
 - Preparar el envío formal al Dr. Hincapié (UDEA).
 - Iniciar redacción de abstract para bioRxiv.
+
+---
+## Entrada: 27-28 Marzo 2026 — Identidad Científica y Primera Publicación
+### Hitos alcanzados
+- **ORCID creado:** 0009-0005-3933-5072 (https://orcid.org/0009-0005-3933-5072)
+- **GitHub público:** https://github.com/VirtusSapiens/Bio-Kidney-AI-2026
+- **4 tags de versión:** v1.0.0 → v1.1.0 → v1.2.0 → v2.0.0
+- **Preprint v1 escrito:** Abstract, Introduction, Methods, Results, Discussion, Conclusion, 10 referencias
+- **bioRxiv:** Sometido como BIORXIV/2026/714957 — rechazado por falta de afiliación institucional (no por contenido)
+- **Cuenta bioRxiv creada:** david.moreno.159cm@gmail.com
+- **LinkedIn actualizado:** Publicación agregada con DOI
+### Archivos generados
+- 00_bitacora/preprint_biokidney_2026.md
+- 00_bitacora/preprint_biokidney_2026.pdf
+
+---
+## Entrada: 29-30 Marzo 2026 — CCO v8 y Preprint v2
+### Hitos técnicos
+- **CCO v8 implementado:** 1,902 segmentos vasculares, 915 bifurcaciones, 100% Murray
+- **TFG mejorada:** 115.2 mL/min (rango normal adulto sano, +40% vs v7)
+- **Modelo Poiseuille calibrado:** Dos pasos, presiones terminales 58.6 +/- 13.4 mmHg
+- **Distribución Beta(3,1.2):** 63% demanda glomerular hacia cortex
+- **Blender v8:** Modelo 3D renderizado (sab_4_abril_1200_am_v8_1.blend)
+- **Preprint v2 EN/ES:** Titulo mejorado, CCO v8 integrado, material suplementario
+- **Segunda sumisión bioRxiv:** BIORXIV/2026/715287 — rechazado por afiliación institucional
+### Archivos generados
+- 02_vascular_cco/generador_cco_v8.py
+- 02_vascular_cco/arbol_vascular_cco_v8.csv
+- 02_vascular_cco/arbol_vascular_cco_v8.png
+- 02_vascular_cco/importar_blender_v8.py
+- 03_modelos_3d/sab_4_abril_1200_am_v8_1.blend
+- 00_bitacora/preprint_biokidney_2026_EN.pdf
+- 00_bitacora/preprint_biokidney_2026_ES.md
+- 00_bitacora/supplementary_material_v8.md
+- biokidney/simulation/fractal_vascularizer.py
+- biokidney/simulation/v8_to_fractal.py
+
+---
+## Entrada: 11 Abril 2026 — Zenodo y Correo Dr. Hincapié
+### Hitos alcanzados
+- **Zenodo publicado:** DOI 10.5281/zenodo.19508077
+  URL: https://zenodo.org/records/19508077
+  Preprint abierto, indexado en OpenAIRE
+- **LinkedIn actualizado:** Publicación con DOI de Zenodo
+- **Correo Dr. Hincapié programado:** Lunes 14 abril 7:00 AM
+  Asunto: Propuesta de colaboracion tecnica e institucional: Framework Bio-Kidney AI 2026 (TFG 115.2 mL/min)
+- **Rama fractal creada:** feature/cco-v8-fractal
+- **Git push exitoso:** Todos los archivos v8 en GitHub
+### Segunda fase definida
+- Pasar de validacion matematica a factibilidad tecnica de fabricacion
+- Especificacion de biotintas por modulo
+- Protocolo de impresion 3D capa por capa
+- Integracion angiogenesis post-impresion
+- Manual de implementacion para laboratorios
+- Automatizacion: Python genera coordenadas para 19,000+ glomérulos en Blender
+
+---
+## Entrada: 27-28 Marzo 2026 — Identidad Cientifica y Primera Publicacion
+### Hitos alcanzados
+- ORCID creado: 0009-0005-3933-5072 (https://orcid.org/0009-0005-3933-5072)
+- GitHub publico: https://github.com/VirtusSapiens/Bio-Kidney-AI-2026
+- 4 tags de version: v1.0.0 a v2.0.0
+- Preprint v1 escrito: Abstract, Introduction, Methods, Results, Discussion, Conclusion, 10 referencias
+- bioRxiv: Sometido como BIORXIV/2026/714957 — rechazado por falta de afiliacion institucional
+- Cuenta bioRxiv creada: david.moreno.159cm@gmail.com
+- LinkedIn actualizado: Publicacion agregada con DOI
+### Archivos generados
+- 00_bitacora/preprint_biokidney_2026.md
+- 00_bitacora/preprint_biokidney_2026.pdf
+
+---
+## Entrada: 29-30 Marzo 2026 — CCO v8 y Preprint v2
+### Hitos tecnicos
+- CCO v8 implementado: 1,902 segmentos vasculares, 915 bifurcaciones, 100% Murray
+- TFG mejorada: 115.2 mL/min (rango normal adulto sano, +40% vs v7)
+- Modelo Poiseuille calibrado de dos pasos: presiones terminales 58.6 +/- 13.4 mmHg
+- Distribucion Beta(3,1.2): 63% demanda glomerular hacia cortex
+- Blender v8: Modelo 3D renderizado (sab_4_abril_1200_am_v8_1.blend)
+- Preprint v2 EN/ES: Titulo mejorado, CCO v8 integrado, material suplementario
+- Segunda sumision bioRxiv: BIORXIV/2026/715287 — rechazado por afiliacion institucional
+- Video para Instagram generado: video_para_instagram.mp4
+### Archivos generados
+- 02_vascular_cco/generador_cco_v8.py
+- 02_vascular_cco/arbol_vascular_cco_v8.csv
+- 02_vascular_cco/arbol_vascular_cco_v8.png
+- 02_vascular_cco/importar_blender_v8.py
+- 03_modelos_3d/sab_4_abril_1200_am_v8_1.blend
+- 00_bitacora/preprint_biokidney_2026_EN.pdf
+- 00_bitacora/preprint_biokidney_2026_ES.md
+- 00_bitacora/supplementary_material_v8.md
+- biokidney/simulation/fractal_vascularizer.py
+- biokidney/simulation/v8_to_fractal.py
+- renal_data_v8_fractal.json
+
+---
+## Entrada: 11 Abril 2026 — Zenodo, Bitacora y Correo Dr. Hincapie
+### Hitos alcanzados
+- Zenodo publicado: DOI 10.5281/zenodo.19508077
+  URL: https://zenodo.org/records/19508077
+  Preprint abierto, indexado en OpenAIRE
+- LinkedIn actualizado: Publicacion con DOI de Zenodo
+- Correo Dr. Hincapie programado: Lunes 14 abril 7:00 AM
+  Asunto: Propuesta de colaboracion tecnica e institucional: Framework Bio-Kidney AI 2026 (TFG 115.2 mL/min)
+- Rama fractal creada: feature/cco-v8-fractal
+- Git push exitoso: Todos los archivos v8 en GitHub
+- Bitacora actualizada con entradas 27 marzo al 11 abril
+### Segunda fase definida
+- Pasar de validacion matematica a factibilidad tecnica de fabricacion
+- Especificacion de biotintas por modulo
+- Protocolo de impresion 3D capa por capa
+- Integracion angiogenesis post-impresion
+- Manual de implementacion para laboratorios
+- Automatizacion: Python genera coordenadas para 19,000+ glomérulos en Blender
+### Pendientes
+- Respuesta Dr. Hincapie (afiliacion GIB-UDEA para resometer a bioRxiv)
+- ResearchGate: abrir con DOI de Zenodo como evidencia
+- CCO v8 fractal: implementar L-systems + Murray + CFD
+- Deployment publico SPA web (Railway/Render)
+- Implementar KD-Trees en CCO para escalabilidad mayor a 5000 nodos
