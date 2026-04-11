@@ -821,6 +821,54 @@ Simulation: Zero hypoxic zones, minimum 5.6 mmHg
 
 ---
 
+#### Test 7: Albumin-to-Creatinine Ratio (ACR)
+**Rationale:** ACR is the definitive test for glomerular filtration barrier
+integrity. If albumin passes massively into the filtrate while creatinine
+is retained, Zone D podocytes are leaking — the filter has holes.
+
+**Protocol:**
+1. Add albumin 4 g/dL + creatinine 1 mg/dL to perfusion media simultaneously
+2. Collect outflow for 24 hours
+3. Calculate: ACR = (Albumin mg/day) / (Creatinine g/day)
+
+| ACR result | Interpretation | Decision |
+|------------|----------------|----------|
+| <30 mg/g | Normal barrier integrity | GO |
+| 30-300 mg/g | Microalbuminuria — mild barrier damage | CONDITIONAL GO |
+| >300 mg/g | Macroalbuminuria — barrier failure | NO-GO |
+
+**Why this matters for the GIB-UDEA:** ACR proves that Zone D podocytes
+are not just present (NPHS1+) but are functionally active as a selective
+barrier — the difference between a tissue that looks like a kidney and
+one that works like a kidney.
+
+---
+
+#### Test 8: Shear Stress Response (Flow Scalability)
+**Rationale:** A functional vascular network should respond proportionally
+to increased flow demand. If GFR scales linearly with perfusion rate,
+the CCO v8 architecture is hemodynamically robust. If the construct
+collapses at higher flows, Zone C is the bottleneck.
+
+**Protocol:**
+1. Establish baseline GFR at 1.5 mL/min perfusion (standard Phase 3B)
+2. Increase perfusion to 2.0 mL/min, hold 30 minutes, measure GFR
+3. Increase to 2.5 mL/min, hold 30 minutes, measure GFR
+4. Return to 1.5 mL/min, verify GFR recovers to baseline
+
+| Response pattern | Interpretation | Decision |
+|-----------------|----------------|----------|
+| GFR scales linearly (+/-15%) | Robust hemodynamics | GO |
+| GFR plateaus at 2.0 mL/min | Zone C near-saturation | CONDITIONAL GO |
+| GFR drops at 2.5 mL/min | Zone C collapse | Flag for redesign |
+| GFR does not recover | Irreversible damage | NO-GO |
+
+**Expected outcome:** CCO v8 terminal pressures (58.6 +/- 13.4 mmHg)
+provide sufficient reserve for 30-40% flow increase before reaching
+the 43 mmHg Starling floor. Linear scaling up to ~2.0 mL/min is predicted.
+
+---
+
 ### 4.4 Master GO/NO-GO Decision Table
 
 | Test | Minimum threshold | Day 30 result | Decision |
@@ -833,6 +881,8 @@ Simulation: Zero hypoxic zones, minimum 5.6 mmHg
 | PO2 >4.0 mmHg everywhere | Critical | _______ | _______ |
 | Lumen patency >85% | Structural | _______ | _______ |
 | Lineage purity >90% | Biological | _______ | _______ |
+| ACR <300 mg/g | Barrier | _______ | _______ |
+| Shear response linear | Hemodynamic | _______ | _______ |
 
 FINAL DECISION: _______
 
@@ -895,6 +945,14 @@ FINAL CLASSIFICATION:
 [ ] NO-GO — Critical failure, analyze and redesign
 
 Signature: _______________ Date: _______________
+
+TRACEABILITY:
+iPSC lot number: _______________ Passage: _______________
+CCO v8 G-code version: _______________ (from renal_data_v1.json hash)
+Bioreactor supervisor (media changes): _______________
+Bioprinter serial number: _______________
+Date of Pluronic evacuation: _______________
+Date of Day 21 GO/NO-GO decision: _______________
 ```
 
 ---
@@ -909,6 +967,8 @@ Signature: _______________ Date: _______________
 | Co-SWIFT optimization | 98% viability, 60 Pa | Live/dead >90% | Confocal |
 | Glomerular filtration | GFR 115.2 mL/min | Inulin clearance 80-120 | Clearance test |
 | Tubular reabsorption | 98.1%, 2.19 L/day | FEGlucose <2%, ERPF | Electrode + volume |
+| Glomerular barrier | Albumin retention | ACR <30 mg/g | ELISA + colorimetric |
+| Hemodynamic reserve | Pressure scalability | Linear GFR vs flow | Shear stress response |
 
 When all six correlations are documented in a single construct, the
 validation report constitutes direct experimental evidence that the
@@ -923,7 +983,7 @@ Bio-Kidney AI 2026 computational framework is predictively valid.
 | 1 | Vascular Architecture to Bioink Specification | v1.1 | COMPLETE |
 | 2 | Co-SWIFT Bioprinting Protocol by Zone | v1.1 | COMPLETE |
 | 3 | iPSC Differentiation to Maturation Schedule | v1.1 | COMPLETE |
-| 4 | Quality Control and Functional Verification | v1.0 | COMPLETE |
+| 4 | Quality Control and Functional Verification | v1.4 | COMPLETE |
 
 Total estimated protocol pages: ~35 (PDF equivalent)
 Target audience: Bioengineering laboratories with extrusion bioprinter,
@@ -933,7 +993,7 @@ Prerequisite: Bio-Kidney AI 2026 computational framework
 patient-specific CCO v8 vascular coordinates.
 
 ---
-*Bio-Kidney AI 2026 — Implementation Protocol v1.3 — COMPLETE*
+*Bio-Kidney AI 2026 — Implementation Protocol v1.4 — COMPLETE*
 *Carlos David Moreno Caceres — VirtusSapiens — April 2026*
 *ORCID: 0009-0005-3933-5072*
 *DOI: 10.5281/zenodo.19508077*
