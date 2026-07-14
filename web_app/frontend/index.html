@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio-Kidney AI — Plataforma de Simulación In-Sílico</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans: ['Inter', 'sans-serif'] },
+    colors: {
+      // Paleta de marca (Spec Maestra V1)
+      brand:   { blue: '#0B2545', blue2: '#13315C', clinical: '#FFFFFF' },
+      bio:     { green: '#2E7D32', bright: '#00E676' },
+    }
+  }}
+}
+</script>
+<style>
+  body { background:#0B2545; color:#E8EEF5; font-family:'Inter',sans-serif; }
+  .card { background:#FFFFFF; color:#0B2545; border-radius:1rem; box-shadow:0 10px 40px rgba(0,0,0,.35); }
+  .btn-primary { background:#2E7D32; color:#fff; transition:.2s; }
+  .btn-primary:hover { background:#256628; box-shadow:0 0 20px rgba(0,230,118,.4); }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
+  .step-dot { transition:.3s; }
+  .field { border:1px solid #C7D2DD; border-radius:.6rem; padding:.7rem .9rem; width:100%; color:#0B2545; }
+  .field:focus { outline:none; border-color:#2E7D32; box-shadow:0 0 0 3px rgba(46,125,50,.15); }
+  .drop { border:2px dashed #9DB2C6; border-radius:.9rem; transition:.2s; }
+  .drop.drag { border-color:#00E676; background:rgba(0,230,118,.06); }
+  .badge { padding:.15rem .6rem; border-radius:999px; font-size:.72rem; font-weight:600; }
+  .fade { animation:fade .4s ease; }
+  @keyframes fade { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  .prog-bar { background:linear-gradient(90deg,#2E7D32,#00E676); transition:width .5s ease; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- Topbar -->
+<header class="flex items-center justify-between px-6 py-4 border-b border-white/10">
+  <div class="flex items-center gap-3">
+    <div class="w-9 h-9 rounded-lg bg-bio-green flex items-center justify-center font-extrabold">BK</div>
+    <div>
+      <div class="font-bold tracking-tight">Bio-Kidney AI</div>
+      <div class="text-xs text-white/50">Validación in-sílico · Riñón bioartificial</div>
+    </div>
+  </div>
+  <nav class="flex items-center gap-2 text-sm" id="stepper"></nav>
+  <button onclick="goto('admin')" class="text-xs text-white/60 hover:text-bio-bright">Backoffice ⚙</button>
+</header>
+
+<main id="app" class="max-w-5xl mx-auto px-6 py-10"></main>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// Estado global del funnel
+// ─────────────────────────────────────────────────────────────
+const state = { screen:'landing', project:null, quote:null, file:null, intent:null, three:null };
+const SCREENS = ['landing','config','preview','payment','download','admin'];
+const LABELS = { landing:'Inicio', config:'Configuración', preview:'Preview 3D', payment:'Pago', download:'Descarga', admin:'Admin' };
+
+function goto(s){ state.screen=s; render(); }
+async function api(url, opts){ const r = await fetch(url, opts); if(!r.ok){ const e=await r.json().catch(()=>({detail:r.statusText})); throw new Error(e.detail||'Error'); } return r.json(); }
+
+function stepper(){
+  const flow = ['landing','config','preview','payment','download'];
+  const idx = flow.indexOf(state.screen);
+  document.getElementById('stepper').innerHTML = flow.map((s,i)=>{
+    const active = i===idx, done = idx>i;
+    const color = active ? 'bg-bio-bright text-brand-blue' : done ? 'bg-bio-green text-white' : 'bg-white/10 text-white/50';
+    return `<span class="step-dot badge ${color}">${i+1}. ${LABELS[s]}</span>`;
+  }).join('<span class="text-white/20">›</span>');
+}
+
+// ─────────────────────────────────────────────────────────────
+// PANTALLA 1 — Landing
+// ─────────────────────────────────────────────────────────────
+function ScreenLanding(){
+  return `
+  <section class="fade text-center py-10">
+    <div class="inline-block badge bg-bio-green/20 text-bio-bright mb-6">Deep Tech · Medicina Regenerativa</div>
+    <h1 class="text-5xl font-extrabold leading-tight mb-4">Simulación hemodinámica renal<br><span class="text-bio-bright">al servicio de la dignidad humana</span></h1>
+    <p class="max-w-2xl mx-auto text-white/70 text-lg mb-10">
+      Convierte tus datos biológicos en modelos vasculares validados in-sílico.
+      Cada procesamiento genera un reporte científico y la geometría estructural
+      lista para biofabricación — sin listas de espera de diálisis.
+    </p>
+    <div class="grid grid-cols-3 gap-4 max-w-3xl mx-auto mb-10">
+      ${[['Ley de Murray','Árboles vasculares optimizados'],['Filtración glomerular','TFG multiescala'],['Bioimpresión','Malla .OBJ / .STL exportable']]
+        .map(([t,d])=>`<div class="card p-5 text-left"><div class="font-bold text-brand-blue">${t}</div><div class="text-sm text-brand-blue/60 mt-1">${d}</div></div>`).join('')}
+    </div>
+    <button onclick="goto('config')" class="btn-primary text-lg font-semibold px-8 py-4 rounded-xl">Iniciar Modelado In Sílico →</button>
+  </section>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// PANTALLA 2 — Configuración (Input)
+// ─────────────────────────────────────────────────────────────
+function ScreenConfig(){
+  return `
+  <section class="fade">
+    <h2 class="text-3xl font-bold mb-2">Panel de Configuración</h2>
+    <p class="text-white/60 mb-8">Define tu proyecto y sube el dataset biológico (máximo 500 MB).</p>
+    <div class="card p-8">
+      <form id="cfgForm" class="grid grid-cols-2 gap-5">
+        <div><label class="text-sm font-semibold text-brand-blue">Nombre del proyecto *</label>
+          <input name="project_name" required class="field mt-1" placeholder="Riñón bioartificial — Cohorte A"></div>
+        <div><label class="text-sm font-semibold text-brand-blue">Institución *</label>
+          <input name="institution" required class="field mt-1" placeholder="Universidad / Laboratorio"></div>
+        <div><label class="text-sm font-semibold text-brand-blue">Email institucional *</label>
+          <input name="user_institution_email" type="email" required class="field mt-1" placeholder="investigador@institucion.edu"></div>
+        <div><label class="text-sm font-semibold text-brand-blue">Tasa de Filtración Glomerular objetivo (mL/min) *</label>
+          <input name="gfr_constant" type="number" step="0.1" value="62.5" required class="field mt-1"></div>
+        <div class="col-span-2">
+          <label class="text-sm font-semibold text-brand-blue">Datos moleculares / biológicos *</label>
+          <div id="drop" class="drop mt-1 p-8 text-center cursor-pointer text-brand-blue/70">
+            <div id="dropText">Arrastra el archivo aquí o haz clic para seleccionar<br><span class="text-xs">.csv, .h5, .vtk, .tiff… (≤ 500 MB)</span></div>
+            <input id="fileInput" type="file" class="hidden">
+          </div>
+        </div>
+        <div class="col-span-2 flex justify-between items-center">
+          <button type="button" onclick="goto('landing')" class="text-brand-blue/60 text-sm">← Volver</button>
+          <button type="submit" id="cfgSubmit" class="btn-primary px-7 py-3 rounded-xl font-semibold" disabled>Generar Preview 3D →</button>
+        </div>
+      </form>
+      <div id="cfgErr" class="text-red-600 text-sm mt-3"></div>
+    </div>
+  </section>`;
+}
+
+function wireConfig(){
+  const drop=document.getElementById('drop'), input=document.getElementById('fileInput'),
+        submit=document.getElementById('cfgSubmit'), txt=document.getElementById('dropText');
+  const setFile=f=>{ state.file=f; txt.innerHTML=`<b>${f.name}</b><br><span class="text-xs">${(f.size/1048576).toFixed(2)} MB</span>`; submit.disabled=false; };
+  drop.onclick=()=>input.click();
+  input.onchange=e=>{ if(e.target.files[0]) setFile(e.target.files[0]); };
+  ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+  drop.addEventListener('drop',e=>{ if(e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+
+  document.getElementById('cfgForm').onsubmit=async e=>{
+    e.preventDefault();
+    if(!state.file){ document.getElementById('cfgErr').textContent='Sube un archivo biológico.'; return; }
+    submit.disabled=true; submit.textContent='Subiendo…';
+    const fd=new FormData(e.target); fd.append('dataset', state.file);
+    try{
+      const res=await api('/api/projects',{method:'POST',body:fd});
+      state.project=res.project; state.quote=res.quote; goto('preview');
+    }catch(err){ document.getElementById('cfgErr').textContent=err.message; submit.disabled=false; submit.textContent='Generar Preview 3D →'; }
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// PANTALLA 3 — Preview de Malla 3D
+// ─────────────────────────────────────────────────────────────
+function ScreenPreview(){
+  const q=state.quote||{};
+  return `
+  <section class="fade">
+    <h2 class="text-3xl font-bold mb-2">Preview de Malla Vascular</h2>
+    <p class="text-white/60 mb-6">Vista preliminar en baja resolución · Proyecto <b class="text-bio-bright">${state.project.id}</b></p>
+    <div class="grid grid-cols-3 gap-6">
+      <div class="col-span-2 card p-2"><div id="viewport" style="height:420px;border-radius:.7rem;overflow:hidden;background:#071A30"></div></div>
+      <div class="card p-6 flex flex-col">
+        <div class="font-bold text-brand-blue mb-3">Recursos requeridos</div>
+        <div class="space-y-3 text-sm text-brand-blue/80 flex-1">
+          <div class="flex justify-between"><span>Nodos vasculares estimados</span><b>${(q.estimated_nodes||0).toLocaleString()}</b></div>
+          <div class="flex justify-between"><span>Dataset</span><b>${q.dataset_size_mb||0} MB</b></div>
+          <div class="flex justify-between"><span>Tiempo clúster estimado</span><b>${q.estimated_cluster_minutes||'—'} min</b></div>
+          <hr class="border-brand-blue/10">
+          <div class="flex justify-between"><span>Créditos de cómputo</span><b>${q.simulation_credits_cost}</b></div>
+          <div class="flex justify-between text-lg text-bio-green"><span>Total</span><b>$${(q.total_billed_usd||0).toFixed(2)} USD</b></div>
+        </div>
+        <button onclick="goto('payment')" class="btn-primary w-full py-3 rounded-xl font-semibold mt-4">🔓 Desbloquear Simulación Completa</button>
+        <button onclick="goto('config')" class="text-brand-blue/50 text-xs mt-3">← Editar configuración</button>
+      </div>
+    </div>
+  </section>`;
+}
+
+async function wirePreview(){
+  const data = await api(`/api/projects/${state.project.id}/preview`);
+  state.quote = data.quote;
+  renderVascular(document.getElementById('viewport'), data.segments);
+}
+
+function renderVascular(container, segments){
+  const w=container.clientWidth, h=container.clientHeight;
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(50,w/h,0.1,1000); cam.position.set(0,0,90);
+  const rend=new THREE.WebGLRenderer({antialias:true}); rend.setSize(w,h); rend.setClearColor(0x071A30);
+  container.innerHTML=''; container.appendChild(rend.domElement);
+  scene.add(new THREE.AmbientLight(0xffffff,0.7));
+  const dl=new THREE.DirectionalLight(0x00E676,0.8); dl.position.set(30,30,50); scene.add(dl);
+
+  const group=new THREE.Group();
+  segments.forEach(s=>{
+    const p1=new THREE.Vector3(s.x1_mm,s.y1_mm,s.z1_mm), p2=new THREE.Vector3(s.x2_mm,s.y2_mm,s.z2_mm);
+    const len=p1.distanceTo(p2)||0.01, r=Math.max(s.radio_um/1000*1.2,0.3);
+    const geo=new THREE.CylinderGeometry(r,r,len,8);
+    const color = s.nivel<=1 ? 0xE53935 : s.nivel<=3 ? 0x2E7D32 : 0x00E676;
+    const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,roughness:.5}));
+    mesh.position.copy(p1.clone().add(p2).multiplyScalar(0.5));
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),p2.clone().sub(p1).normalize());
+    group.add(mesh);
+  });
+  scene.add(group);
+  let raf; (function anim(){ raf=requestAnimationFrame(anim); group.rotation.y+=0.006; rend.render(scene,cam); })();
+  state.three=()=>{ cancelAnimationFrame(raf); rend.dispose(); };
+}
+
+// ─────────────────────────────────────────────────────────────
+// PANTALLA 4 — Pasarela de Pago ⚡
+// ─────────────────────────────────────────────────────────────
+function ScreenPayment(){
+  const q=state.quote||{};
+  return `
+  <section class="fade max-w-xl mx-auto">
+    <h2 class="text-3xl font-bold mb-2">Pasarela de Pago Seguro</h2>
+    <p class="text-white/60 mb-6">Facturación para subvención / laboratorio · Cifrado por Stripe</p>
+    <div class="card p-8">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b border-brand-blue/10">
+        <span class="text-brand-blue/70">Total a procesar</span>
+        <span class="text-2xl font-bold text-bio-green">$${(q.total_billed_usd||0).toFixed(2)} USD</span>
+      </div>
+      <div id="payMode" class="badge bg-brand-blue/10 text-brand-blue mb-4"></div>
+      <form id="payForm" class="space-y-4">
+        <div><label class="text-sm font-semibold text-brand-blue">Nombre en la tarjeta *</label>
+          <input name="billing_name" required class="field mt-1" placeholder="Dr. Nombre Apellido"></div>
+        <div><label class="text-sm font-semibold text-brand-blue">Número de tarjeta *</label>
+          <input name="card" required class="field mt-1" placeholder="4242 4242 4242 4242" maxlength="19"></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="text-sm font-semibold text-brand-blue">Exp.</label><input class="field mt-1" placeholder="12/28"></div>
+          <div><label class="text-sm font-semibold text-brand-blue">CVC</label><input class="field mt-1" placeholder="123"></div>
+        </div>
+        <div><label class="text-sm font-semibold text-brand-blue">Dirección de facturación *</label>
+          <input name="billing_address" required class="field mt-1" placeholder="Ciudad, país"></div>
+        <div><label class="text-sm font-semibold text-brand-blue">Documento fiscal (NIT / Tax ID) *</label>
+          <input name="tax_id" required class="field mt-1" placeholder="NIT 900.xxx.xxx-x"></div>
+        <button type="submit" id="payBtn" class="btn-primary w-full py-4 rounded-xl font-bold text-lg">Pagar y ejecutar simulación ⚡</button>
+      </form>
+      <div id="payErr" class="text-red-600 text-sm mt-3"></div>
+      <p class="text-xs text-brand-blue/40 mt-4">🔒 El procesamiento en el clúster HPC se inicia únicamente tras la confirmación bancaria (Payment_Success).</p>
+    </div>
+  </section>`;
+}
+
+async function wirePayment(){
+  const cfg=await api('/api/payments/config');
+  document.getElementById('payMode').textContent = cfg.bypass ? 'Modo TEST local (bypass) — usa cualquier tarjeta' : 'Stripe Elements — modo seguro';
+  document.getElementById('payForm').onsubmit=async e=>{
+    e.preventDefault();
+    const btn=document.getElementById('payBtn'); btn.disabled=true; btn.textContent='Procesando pago…';
+    const f=e.target;
+    try{
+      const intent=await api('/api/payments/intent',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ project_id:state.project.id, billing_name:f.billing_name.value,
+          billing_address:f.billing_address.value, tax_id:f.tax_id.value })});
+      state.intent=intent;
+      // Modo bypass: confirmamos localmente (emula el webhook payment_intent.succeeded)
+      if(cfg.bypass){
+        await api('/api/payments/confirm-bypass',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ payment_intent_id:intent.payment_intent_id })});
+      } else {
+        // Stripe real: aquí se confirmaría con stripe.confirmCardPayment(client_secret)
+        // El webhook del servidor dispararía el clúster.
+        throw new Error('Configura STRIPE_SECRET_KEY para el modo real.');
+      }
+      goto('download');
+    }catch(err){ document.getElementById('payErr').textContent=err.message; btn.disabled=false; btn.textContent='Pagar y ejecutar simulación ⚡'; }
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// PANTALLA 5 — Centro de Descarga
+// ─────────────────────────────────────────────────────────────
+function ScreenDownload(){
+  return `
+  <section class="fade max-w-2xl mx-auto text-center">
+    <div class="text-bio-bright text-sm font-semibold mb-2">✔ Pago confirmado</div>
+    <h2 class="text-3xl font-bold mb-2">Centro de Descarga</h2>
+    <p class="text-white/60 mb-8">El clúster de simulación está procesando tu modelo.</p>
+    <div class="card p-8">
+      <div id="progWrap">
+        <div class="flex justify-between text-sm text-brand-blue/70 mb-2"><span id="progLabel">Inicializando clúster…</span><span id="progPct">0%</span></div>
+        <div class="w-full h-3 bg-brand-blue/10 rounded-full overflow-hidden"><div id="progBar" class="prog-bar h-full" style="width:0%"></div></div>
+      </div>
+      <div id="downloads" class="hidden mt-6">
+        <div class="text-bio-green font-bold text-lg mb-4">✅ Simulación completada</div>
+        <div class="grid grid-cols-1 gap-3">
+          <a id="dlpdf" class="btn-primary py-3 rounded-xl font-semibold">📄 Descargar Reporte Completo (PDF)</a>
+          <div class="grid grid-cols-2 gap-3">
+            <a id="dlobj" class="border border-brand-blue/30 text-brand-blue py-3 rounded-xl font-semibold hover:bg-brand-blue/5">⬇ Malla .OBJ</a>
+            <a id="dlstl" class="border border-brand-blue/30 text-brand-blue py-3 rounded-xl font-semibold hover:bg-brand-blue/5">⬇ Malla .STL</a>
+          </div>
+        </div>
+        <button onclick="goto('admin')" class="text-brand-blue/50 text-xs mt-5">Ver en el backoffice →</button>
+      </div>
+    </div>
+  </section>`;
+}
+
+async function wireDownload(){
+  const id=state.project.id;
+  const bar=document.getElementById('progBar'), pct=document.getElementById('progPct'), lab=document.getElementById('progLabel');
+  const labels={PAID:'Pago verificado, encolando…',PROCESSING:'Ejecutando pipeline multiescala…',COMPLETED:'Completado'};
+  const poll=async()=>{
+    const s=await api(`/api/projects/${id}/status`);
+    bar.style.width=s.progress+'%'; pct.textContent=s.progress+'%'; lab.textContent=labels[s.status]||s.status;
+    if(s.status==='COMPLETED'){
+      document.getElementById('progWrap').classList.add('opacity-60');
+      const dl=document.getElementById('downloads'); dl.classList.remove('hidden');
+      document.getElementById('dlpdf').href=`/api/reports/${id}/report.pdf`;
+      document.getElementById('dlobj').href=`/api/reports/${id}/report.obj`;
+      document.getElementById('dlstl').href=`/api/reports/${id}/report.stl`;
+      return;
+    }
+    setTimeout(poll,1200);
+  };
+  poll();
+}
+
+// ─────────────────────────────────────────────────────────────
+// PANTALLA 6 — Backoffice (Admin)
+// ─────────────────────────────────────────────────────────────
+function ScreenAdmin(){
+  return `
+  <section class="fade">
+    <div class="flex justify-between items-center mb-6">
+      <div><h2 class="text-3xl font-bold">Backoffice</h2><p class="text-white/60">Panel de administración y recaudación</p></div>
+      <button onclick="goto('landing')" class="text-bio-bright text-sm">+ Nuevo modelado</button>
+    </div>
+    <div id="metrics" class="grid grid-cols-4 gap-4 mb-6"></div>
+    <div class="card p-2 overflow-hidden">
+      <table class="w-full text-sm text-brand-blue">
+        <thead class="text-left text-brand-blue/50 border-b border-brand-blue/10">
+          <tr><th class="p-3">ID</th><th>Usuario</th><th>Fecha</th><th>Modelo</th><th>Estado</th><th class="text-right p-3">USD</th></tr>
+        </thead>
+        <tbody id="adminRows"></tbody>
+      </table>
+    </div>
+    <div class="text-center mt-4"><a href="/dashboard" class="text-white/40 text-xs hover:text-bio-bright">Abrir dashboard científico técnico →</a></div>
+  </section>`;
+}
+
+async function wireAdmin(){
+  const d=await api('/api/admin/projects'); const m=d.metrics;
+  const cards=[['Proyectos',m.total_projects,''],['Completados',m.completed,''],['Procesando',m.processing,''],['Recaudado','$'+m.total_revenue_usd.toFixed(2),'text-bio-green']];
+  document.getElementById('metrics').innerHTML=cards.map(([t,v,c])=>`<div class="card p-4"><div class="text-brand-blue/50 text-xs">${t}</div><div class="text-2xl font-bold ${c||'text-brand-blue'}">${v}</div></div>`).join('');
+  const statusColor=s=>({COMPLETED:'bg-bio-green/15 text-bio-green',PROCESSING:'bg-amber-100 text-amber-700',AWAITING_PAYMENT:'bg-red-100 text-red-600',PAID:'bg-blue-100 text-blue-700'}[s]||'bg-brand-blue/10 text-brand-blue');
+  document.getElementById('adminRows').innerHTML = d.projects.length ? d.projects.map(r=>`
+    <tr class="border-b border-brand-blue/5">
+      <td class="p-3 font-mono text-xs">${r.id}</td><td>${r.user}</td>
+      <td>${(r.date||'').slice(0,10)}</td><td>${r.model_type}</td>
+      <td><span class="badge ${statusColor(r.status)}">${r.status}</span></td>
+      <td class="text-right p-3 font-semibold">$${r.billed_usd.toFixed(2)}</td>
+    </tr>`).join('') : `<tr><td colspan="6" class="p-8 text-center text-brand-blue/40">Sin proyectos aún</td></tr>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Router de vistas
+// ─────────────────────────────────────────────────────────────
+function render(){
+  if(state.three){ state.three(); state.three=null; }
+  stepper();
+  const app=document.getElementById('app');
+  const guardFunnel = ['config','preview','payment','download'].includes(state.screen) && !state.project && state.screen!=='config';
+  if(guardFunnel){ state.screen='landing'; }
+  const views={ landing:ScreenLanding, config:ScreenConfig, preview:ScreenPreview, payment:ScreenPayment, download:ScreenDownload, admin:ScreenAdmin };
+  app.innerHTML = views[state.screen]();
+  const wires={ config:wireConfig, preview:wirePreview, payment:wirePayment, download:wireDownload, admin:wireAdmin };
+  if(wires[state.screen]){ try{ wires[state.screen](); }catch(e){ console.error(e); } }
+}
+render();
+</script>
+</body>
+</html>
