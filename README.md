@@ -67,8 +67,12 @@ En la raíz del proyecto se encuentran las herramientas de orquestación mejorad
 
 ---
 
-## 📊 Estado Actual: Pipeline 100% Completado
-A fecha de Marzo 2026, el sistema ha superado con éxito todas las fases de validación *in-silico*, demostrando la capacidad teórica de un riñón bioimpreso para alcanzar un TFG de ~82 mL/min y una producción de orina homeostática de ~1.5 mL/min.
+## 📊 Estado Actual (revisión de honestidad epistémica — preprint v4, julio 2026)
+La **contribución validada** de Bio-Kidney AI 2026 es un **gemelo digital geométrico multicapa** del riñón (Capas 0–4): dominio anclado a morfometría poblacional, ~1.300 nefronas representativas, árbol vascular con **ley de Murray (α = 3.0, 100% de cumplimiento)**, y sistema colector/calicial anclado a literatura. Esta geometría es **reproducible por clonación** (pipeline determinista con semilla fija).
+
+Los **módulos funcionales** (filtración glomerular, optimización de bioimpresión Co-SWIFT, cinética de diferenciación iPSC) son **verificaciones de factibilidad de orden reducido, calibradas — no predicciones fisiológicas**: toda cifra funcional (p. ej. TFG) se reporta como *feasibility check* bajo una escala calibrada, no como resultado emergente de la geometría.
+
+Dos módulos están **EN CUARENTENA** y sus cifras previas están **retiradas**: transporte de O₂ (el solver diverge numéricamente) y reabsorción tubular (no compila). El detalle completo está en el preprint v4 (`00_bitacora/preprint_biokidney_2026_EN_v4.md`) y en `00_bitacora/MARCO_honestidad_epistemica_BioKidney.md`.
 
 **Investigador Principal:** Carlos David Moreno Cáceres (VirtusSapiens)  
 **Ubicación:** Medellín, Colombia

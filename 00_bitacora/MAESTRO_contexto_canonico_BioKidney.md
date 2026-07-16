@@ -12,35 +12,34 @@ Formación previa en la Fuerza Aérea Venezolana (ex oficial, mención en guerra
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANElEQVR4nO3OQQmAABRAsaeILbwZ9Fewo0Gs4E2ELcGWmTmqKwAA/uLeqr06v54AAPDa+gAthwNEfGhnhAAAAABJRU5ErkJggg==)  
 **2. ESTADO CANÓNICO DEL PROYECTO (a 19 jun 2026)**  
 Bio-Kidney AI 2026 es hoy un **gemelo digital / simulador computacional in**  **silico**. El riñón físico  **no existe**. La contribución real es la  **integración** ** ** **abierta y reproducible** de módulos biofísicos sobre hardware modesto —  **no** la invención de métodos nuevos de generación vascular. Dos hitos a comunicar con precisión:  
-1. **Pipeline integrado v8 (marzo 2026, publicado).** Integración de los seis módulos biofísicos en un solo pipeline predictivo, con TFG bilateral de ** ** **115,2 mL/min** dentro del rango fisiológico normal, sobre hardware de consumo (16 GB RAM, sin GPU, <60 s). Este es el resultado del preprint en Zenodo.  
+1. **Pipeline integrado v8 (marzo 2026, publicado).** Integración de los cinco módulos biofísicos en un solo pipeline predictivo, con TFG bilateral de ** ** **115,4 mL/min** dentro del rango fisiológico normal, sobre hardware de consumo (16 GB RAM, sin GPU, <60 s). Este es el resultado del preprint en Zenodo.  
 2. **Reconstrucción por capas (junio 2026, en curso).** Tras el hito de marzo, Carlos identificó que la  **arquitectura vascular** necesitaba una base más rigurosa y la está reconstruyendo capa por capa (gemelo digital, Capas 0–4). Estado a la fecha:  **Capas 0, 1 y 2 completadas y validadas; Capa 3 (el árbol** ** ** **vascular) es la frontera inmediata, aún sin empezar.** Esta fase fortalece el plano vascular; no contradice el hito de marzo, lo cimenta mejor.  **Cómo describir el momento actual (honesto):** "El pipeline integrado ya produjo un resultado fisiológicamente plausible y publicado; actualmente se reconstruye la arquitectura vascular con mayor rigor mediante un gemelo digital por capas, cuya pieza central —el árbol vascular— está en desarrollo."  
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVR4nO3OQQmAABRAsSfYxZo/kC1sYQLPJrCCNxG2BFtmZquOAAD4i3Ot7mr/egIAwGvXA4qzBdC53Vr8AAAAAElFTkSuQmCC)  
 **3. CIFRAS CANÓNICAS (** **usar ** **SOLO estas)**  
 | | | |  
 |-|-|-|  
 | **Parámetro** | **Valor vigente** | **Nota de encuadre** |   
-| TFG (GFR) bilateral | **115,2 mL/min** | Dentro del rango normal humano (100–125). NO decir "supera al nativo". |   
+| TFG (GFR) bilateral | **115,4 mL/min** | Reportada como **feasibility check bajo escala calibrada, NO predicción geométrica de TFG** (v4 §3.3). En rango normal por construcción de la calibración. NO decir "supera al nativo". |   
 | Presión capilar glomerular (Pgc) | 58,6 ± 13,4 mmHg | Por encima del umbral de filtración (~43 mmHg). |   
-| WSS hemodinámico | **5,6 dyn/cm²** | Rango renal real 1–10 dyn/cm². (El valor 24–37 con rango 10–70 está SUPERADO.) |   
-| Oxigenación tisular | 100% oxigenado, 0% hipóxico | Difusión por Ley de Fick + Michaelis-Menten. |   
+| WSS hemodinámico | **5,6 dyn/cm²** | **Punto de operación de entrada (Co-SWIFT), NO resultado validado** (v4 §3.5). Rango renal real 1–10 dyn/cm². (El valor 24–37 con rango 10–70 está SUPERADO.) |   
+| Oxigenación tisular | **EN CUARENTENA (retirada)** | Solver O₂ diverge numéricamente — cifra retirada; ver preprint v4 §4.8. |  
 | Ventana de bioimpresión iPSC | Días 21–30 de cultivo | — |   
-| Viabilidad bioimpresión (Co-SWIFT) | 98% | Optimización PSO, frente de Pareto. |   
-| Producción de orina (reabsorción) | ~2,19 L/día | Dentro del rango fisiológico. NO enmarcar como "supera". |   
+| Viabilidad bioimpresión (Co-SWIFT) | 98% | **Techo (clamp) de la función objetivo [20,98], NO óptimo computado ni resultado validado** (v4 §3.5). Optimización PSO, frente de Pareto. |   
+| Producción de orina (reabsorción) | **EN CUARENTENA (retirada)** | Módulo no compila; cifra no computada (2,19 L/día retirada). Ver preprint v4 §3.6. |   
 | Hardware | Dell Inspiron, i5, 16 GB RAM, sin GPU | Ubuntu. Ejecución <60 s. |   
 | Vascular (pipeline v8 publicado) | CCO v8, 1.902 segmentos | El árbol por capas (Capa 3) lo está rehaciendo con space colonization + Murray. |   
    
    
 **Cifras SUPERADAS que NO deben aparecer:** TFG 82 mL/min; "nativo 62,5 mL/min"; "7/12 KPIs superan al nativo"; WSS 24,69–37,04 dyn/cm²; CCO v7 / 1.448 segmentos como cifra actual (es histórica).  
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANElEQVR4nO3OUQmAABBAsSeILQSjXgcrmkOs4J8IW4ItM7NXZwAA/MW1Vlt1fBwBAOC9+wEukwQ+V/SggAAAAABJRU5ErkJggg==)  
-**4. LOS SEIS MÓDULOS (encuadre de comunicación)**  
-El proyecto se comunica como **seis módulos biofísicos integrados**:  
+**4. LOS CINCO MÓDULOS (encuadre de comunicación)**  
+El proyecto se comunica como **cinco módulos biofísicos integrados**:  
 1. Árbol vascular (CCO / space colonization + Ley de Murray)  
-2. Difusión de oxígeno  
-3. Cinética y diferenciación de iPSC  
-4. Bioimpresión Co-SWIFT  
-5. Filtración glomerular (Starling-Deen)  
-6. Reabsorción tubular  
-(Internamente el pipeline tiene 12 pasos granulares; los "12 módulos" y los "6 módulos" son la misma obra a distinta resolución. Para público y papers, usar** ** **seis**. No mezclar ambos números en una misma pieza.) ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVR4nO3OMQ2AABAAsSNBACPq8MH2NpGACyywEZJWQZeZ2aszAAD+4l6rrTq+ngAA8Nr1AL/KBEe6dElaAAAAAElFTkSuQmCC)  
+2. Cinética y diferenciación de iPSC  
+3. Bioimpresión Co-SWIFT  
+4. Filtración glomerular (Starling-Deen)  
+5. Reabsorción tubular  
+(Internamente el pipeline tiene 12 pasos granulares; los "12 módulos" y los "5 módulos" son la misma obra a distinta resolución. Para público y papers, usar** ** **cinco**. No mezclar ambos números en una misma pieza.) ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnEAAAACCAYAAAA3pIp+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVR4nO3OMQ2AABAAsSNBACPq8MH2NpGACyywEZJWQZeZ2aszAAD+4l6rrTq+ngAA8Nr1AL/KBEe6dElaAAAAAElFTkSuQmCC)  
 **5. POSICIONAMIENTO HONESTO (regla transversal)**  
 - El aporte es **integración**, no invención. El modelado de árboles vasculares renales es un campo activo y poblado;  **no** posicionarse como "primero en modelar vasculatura renal" (insostenible).  
 - El gemelo digital resuelve **"el plano, no el ladrillo"**: la mitad geométrica/de diseño del cuello de botella de vascularización (qué arquitectura cumple la restricción de difusión de O₂). La mitad biológica —maduración, anastomosis, perfusión sin necrosis— requiere laboratorio húmedo y  **ningún** ** ** **modelo digital la resuelve solo**.  
