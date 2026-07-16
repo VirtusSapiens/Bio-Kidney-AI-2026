@@ -1436,3 +1436,39 @@ Al limpiar el working tree (13-jul) se confirmó que **`analizador_proyecto_biok
 
 ### Estado
 **Cerrado (auditoría).** Deuda derivada, sin aplicar hasta decisión: (a) reparar el solver (Gauss-Seidel red-black o ω≤1) + reemplazar `nanmean`/`nanmin` por detección de NaN que falle ruidosamente; (b) corregir las cifras de O₂ del preprint v3 (§2.2/§3.2, líneas 26/106/108/210); (c) excluir `col` del término fuente.
+
+## ENTRADA 029 — 16 de julio de 2026 — Cierre de la sesión de corrección: preprint v4 (O₂ retirado), reproducibilidad versionada, sincronización repo↔v4
+
+**Estado:** **CERRADO.** Sesión de corrección que implementa las decisiones derivadas de la auditoría (Entrada 028). Se redactó el preprint v4 retirando el módulo de O₂ (no se arregló), se versionó la contribución central del paper que no estaba en git, y se sincronizó todo el repo con el nuevo registro de honestidad. Sin reescritura de historial; sin publicación en Zenodo (paso irreversible, aparte).
+
+### 1. Preprint v4 redactado (`preprint_biokidney_2026_EN_v4.md`, commit `7870574`)
+- **Módulo de O₂ retirado, no arreglado.** §2.2 (Krogh) y §3.4 (Oxygen Diffusion) **eliminadas**; añadida **§4.8 "Oxygen Transport — Withdrawn from This Version"** (divergencia Jacobi ω=1.6, contaminación `col`, límite de escala 0.6 mm vs 150 µm); añadida **§3.7 Reproducibility**.
+- **Título** sin la cláusula "a Real-Field Oxygen Solver"; encuadre epistémico → el framework **no contiene módulos de nivel solver-real**.
+- **GFR corregido:** 115.2→**115.4** bilateral, 57.6→**57.7** por riñón (aritmética 3.7×15.6; **target-vs-logrado aclarado** en §2.1.3: 55.5 = presión objetivo 58.0, 57.7 = lograda 58.6). Propagado a los 9 sitios de 115.2.
+- **Referencias renumeradas a [1]–[12]:** se eliminaron 3 huérfanas reales (Krogh, Michaelis, Herschel) y se **restauró Grebenyuk** tras detectar que estaba citada en la **cita agrupada `[3,4]`** que el grep simple `\[N\]` no capturaba. Verificación group-aware: cero huérfanas.
+- **Aclaración segmento-vs-nodo** en §3.3: 1.902 segmentos = 1.905 nodos − 3 (un nodo raíz por sistema art/ven/col).
+- Verificación: grep de cifras de O₂ = **0** en el v4.
+
+### 2. Reproducibilidad versionada (commit `141466b`)
+- **Las Capas 0–4 (`08_gemelo_digital/`) y `renal_data_v1.json` NO estaban en git** — la contribución central del paper era irreproducible por clonación. Ahora versionadas.
+- **Determinismo confirmado:** el generador v7 con semilla fija produce un CSV **idéntico bit-a-bit** (md5 `5999d564…`, **1.448 segmentos**: 692 art / 684 ven / 72 col).
+- **Excluidos** (`.gitignore`, para no publicar geometría transitoria): `08_gemelo_digital/_backup_pre_seno/` (geometría pre-corrección del defecto cortical 152/1300) y **13 `.npz` experimentales** de la raíz (variantes `v1/v2/v3`, sweeps `wrep*`, auditorías, backups).
+
+### 3. Sincronización repo↔v4 (commit `9571d79`)
+- Alineados con el registro v4: `supplementary_material_v8.md` (115.4/57.7, O₂ fuera, six→five módulos), `README.md` (**retirado "Pipeline 100% Completado"** y "todas las fases de validación" → contribución = gemelo geométrico + feasibility checks + cuarentenas), `dashboard_maestro_app.py` (82→115.4 feasibility, reabsorción→cuarentena, viabilidad/WSS etiquetadas clamp/operating-point), `MAESTRO_contexto_canonico_BioKidney.md` (cinco módulos, 115,4, O₂/reabsorción en cuarentena, viabilidad/GFR/WSS recalificadas; guard de cifras prohibidas intacto).
+- **Manuscritos pre-honestidad archivados** (commit `4988ca0`): `preprint_biokidney_2026.md` (v2 EN) y `..._ES.md` → `99_archivo/SUPERSEDED_*` (solo movidos, contenido intacto).
+
+### 4. Auditoría de salud del repo
+- **85 de 87 módulos versionados compilan** (`py_compile`).
+- **Tres módulos en cuarentena confirmados:** (i) O₂ (`simulador_oxigeno_biokidney.py`, diverge en runtime); (ii) reabsorción tubular (`simulador_reabsorcion_tubular.py`, IndentationError L208); (iii) `analizador_proyecto_biokidney.py` (IndentationError L9, roto en HEAD — nunca compiló).
+- **Deuda anotada:** el MVP web no arranca en un clon fresco por `init_db()` apuntando a `web_app/database/` sin `mkdir` (falta bootstrap, no falta código); **tres modelos de O₂ coexistiendo** — Fick 3D roto, Krogh 2D del backend web (acotado, vivo en la app), Krogh 30×30 del texto (retirado).
+
+### 5. Preservado sin tocar (md5 verificado a lo largo de la sesión)
+BITACORA previa (entradas ≤028), `MARCO_honestidad_epistemica_BioKidney.md`, `CHANGELOG_v2_a_v3.md`, `preprint_biokidney_2026_EN_v3.md` (DOI 10.5281/zenodo.21314073), `implementation_protocol_v1.md` (DOI 10.5281/zenodo.19508077). **No se reescribió historial.** (`INDICE_BioKidneyAI.md` y los `CONTEXTO_*.md` quedaron untracked, fuera de los commits.)
+
+### 6. Pendiente
+- **Publicar el v4 en Zenodo** — NO hecho (paso irreversible, decisión aparte); implica sincronizar también `implementation_protocol_v1.md` (tiene DOI propio, aún con cifras viejas).
+- **Retomar el hilo del adaptador** (Entrada 023): poblar `es_terminal` real, **excluir `col`** del término fuente de O₂, y **repuntar los simuladores al gemelo** (`arbol_vascular_cco_v8_gemelo.csv`).
+
+### Estado
+**Cerrado.** Preprint v4 + reproducibilidad + sincronización commiteados (`7870574`, `141466b`/`03964c8`/`0153294`/`6565b32`, `9571d79`, `4988ca0`). El repo es clonable y su puerta de entrada (README/MAESTRO) dice lo mismo que el paper. Próximo paso de ciencia: cerrar el adaptador del gemelo.
