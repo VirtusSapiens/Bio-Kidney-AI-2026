@@ -146,7 +146,7 @@ Spatial coverage analysis against 1,300 cortically-biased demand points confirme
 
 ![](../02_vascular_cco/arbol_vascular_cco_v8.png)
 
-**Figure 1. Three-dimensional rendering of the CCO v8 renal vascular tree.** Complete vascular architecture generated from `renal_data_v1.json` and rendered with Matplotlib (3D plot, axes in mm): arterial system (red, 904 segments), venous system (blue, 926 segments), and collecting system (yellow, 72 segments). Vessel caliber is proportional to segment radius. Teal/green points indicate the 1,300 glomerular demand seeds generated with a Beta(3, 1.2) radial distribution, with 63.1% in the cortical zone. Note the higher vascular density in the peripheral cortical region compared to the medullary zone. All 915 bifurcations satisfy Murray's Law (α = 3.0, 100% compliance). The CCO v8 generation shown here is the vascular source from which the validated multi-layer geometric twin (Layers 0–4) is constructed.
+**Figure 1. Three-dimensional rendering of the CCO v8 renal vascular tree.** Complete vascular architecture generated from `renal_data_v1.json` and rendered with Matplotlib (3D plot, axes in mm): arterial system (red, 904 segments), venous system (blue, 926 segments), and collecting system (yellow, 72 segments). Vessel caliber is proportional to segment radius. Teal/green points indicate the 1,300 glomerular demand seeds generated with a Beta(3, 1.2) radial distribution, with 63.1% in the cortical zone. Note the higher vascular density in the peripheral cortical region compared to the medullary zone. All 915 bifurcations satisfy Murray's Law (α = 3.0, 100% compliance). The CCO v8 generation shown here is the vascular source from which the validated multi-layer geometric twin (Layers 0–4) is constructed. (The "R_min=45.3 µm" shown in the figure banner is the global minimum across arterial and venous segments; the minimum arterial radius reported in the text is 47.7 µm.)
 
 <div style="page-break-after: always;"></div>
 
@@ -213,7 +213,7 @@ The MOPSO explored the viability–pressure space and returned a Pareto archive 
 
 ### 3.7 Reproducibility
 
-The geometric pipeline is **deterministic under a fixed random seed**. Regenerating the vascular tree from the seeded generator produces a **bit-for-bit identical file** (MD5 `5999d564…`; 1,448 segments — 692 arterial, 684 venous, 72 collecting), so the tree is reproducible *by cloning*, not merely re-describable in prose. An honest caveat applies: the **data** are bit-reproducible, but the **figures** are not — Matplotlib rendering is not bit-deterministic across environments.
+The geometric pipeline is **deterministic under a fixed random seed**. Regenerating the vascular tree with `generador_cco_v8.py` (fixed seed = 42) produces a **bit-for-bit identical file**, verified by comparing the MD5 of the regenerated output against the versioned `renal_data_v1.json` (MD5 `4f881a05…`; 1,902 segments — 904 arterial, 926 venous, 72 collecting); the tree is thus reproducible *by cloning*, not merely re-describable in prose. An honest caveat applies: the **data** are bit-reproducible, but the **figures** are not — Matplotlib rendering is not bit-deterministic across environments.
 
 The geometric Layers 0–4 and the exported `renal_data_v1.json` are now **versioned in the git repository** — they were not in the previous release — so the repository is clonable and executable, not only readable. Modules under quarantine are declared explicitly: oxygen transport (numerical divergence; Section 4.8), tubular reabsorption (does not compile; Section 3.6), and one non-scientific reporting script. A compilation audit of the versioned codebase found that **85 of 87 modules compile**.
 
@@ -284,7 +284,7 @@ The Co-SWIFT bioprinting module contributes a working multi-objective optimizer 
 
 ### 4.7 Scope and Limitations
 
-This work constitutes the Phase 1 publication of the Bio-Kidney AI framework, focused on vascular architecture, macro-scale hemodynamics, and whole-organ functional prediction. Several limitations and scope boundaries merit explicit acknowledgment:
+This work constitutes the Phase 1 publication of the Bio-Kidney AI framework, focused on vascular architecture, macro-scale hemodynamics, and geometric fidelity for pre-fabrication analysis. Several limitations and scope boundaries merit explicit acknowledgment:
 
 **In-silico nature.** All results are derived from computational simulation. No in-vitro perfusion experiments, organoid cultures, or in-vivo transplantation studies have been performed. The physiological plausibility of the outputs is established by comparison to published reference values, not by direct experimental measurement.
 
