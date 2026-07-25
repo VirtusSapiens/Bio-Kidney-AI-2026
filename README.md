@@ -1,7 +1,7 @@
 # BioKidney-AI 2026
 
 ## 🚀 Propósito del Sistema
-**BioKidney-AI** es un ecosistema de simulación multiescala diseñado para el desarrollo y validación *in-silico* de riñones artificiales bioimpresos funcionales. El sistema integra desde la generación sintética de árboles vasculares basados en leyes biológicas (Murray) hasta la modelación compleja de la filtración glomerular y reabsorción tubular, permitiendo predecir la viabilidad fisiológica de un órgano antes de su biofabricación.
+**BioKidney-AI** entrega un **gemelo digital geométrico multi-capa** del riñón como fundamento reproducible y abierto para la prefabricación en bioimpresión — *"blueprint, not brick"*. Su contribución validada es la **fidelidad geométrica y anatómica** de la arquitectura vascular y del sistema colector (árboles arteriales/venosos/colectores bajo la ley de Murray, anclados a morfometría poblacional), **no la función fisiológica**. Los módulos funcionales (filtración, reabsorción, transporte de O₂) se ofrecen como *feasibility checks* de orden reducido o están en cuarentena, no como predicciones validadas ni como un órgano funcional.
 
 ---
 
@@ -14,8 +14,8 @@ Contiene algoritmos de **Optimización Constructiva Restringida (CCO)** para gen
 ### 2. Capa de Fenomenología Física (`01_simuladores`)
 Módulos que ejecutan simulaciones de transporte de masa:
 - **Filtración Glomerular:** Ecuaciones de Starling + Modelo Deen.
-- **Reabsorción Tubular:** Cinética de transportadores (Michaelis-Menten) y balance hídrico.
-- **Difusión de Oxígeno:** Modelado 3D de gradientes de presión parcial de O2 (Fick).
+- **Reabsorción Tubular:** [EN CUARENTENA — no operativo, ver §3.6 v4] módulo no compila; cifras retiradas.
+- **Difusión de Oxígeno:** [RETIRADO en v4 — ver §4.8] módulo no operativo (solver diverge; límite de resolución capilar).
 - **Cinética Celular:** Maduración de iPSCs y protocolos de diferenciación.
 
 ### 3. Capa de Visualización y CAD (`03_modelos_3d`)
