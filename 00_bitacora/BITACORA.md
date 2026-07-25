@@ -1501,3 +1501,40 @@ BITACORA previa (entradas ≤028), `MARCO_honestidad_epistemica_BioKidney.md`, `
 
 ### Estado
 **Corregido y verificado desde clon.** El JSON real (1.902 seg) está en `859f13e`. Pendiente sin ejecutar (decisión aparte): push de `feature/cco-v8-fractal` → `origin` y merge `feature` → `main` (el default público sigue en `b550317`). No se reescribió historial; ningún contenido de archivo científico fue modificado en esta corrección.
+
+---
+
+## ENTRADA 031 — 25 de julio de 2026 — Publicación del preprint v4 en Zenodo + cierre de la sesión de corrección
+
+**Estado:** **CERRADO — PUBLICADO.** El preprint v4 (honesto, con O₂ retirado y las capas geométricas versionadas y reproducibles) está publicado en Zenodo y todo el trabajo de la sesión está en `origin/main`. Cierre de la línea de corrección abierta tras la auditoría (Entradas 028–030).
+
+### 1. Preprint v4 PUBLICADO en Zenodo
+- **Version DOI:** `10.5281/zenodo.21576269` (v4, 25 jul 2026). **Concept DOI:** `10.5281/zenodo.19508076` (resuelve siempre a la última versión — **usar por defecto para citar**).
+- Publicado como *new version* del registro existente; **cadena de versiones preservada:** v1 (`19508077`) → v2 (`20390315`) → v3 (`21314073`) → v4 (`21576269`). Historial intacto, **sin reescritura**.
+- **Título final:** *"A Multi-Layer Geometric Digital Twin of the Human Kidney: Anatomical Fidelity and Calibrated Reduced-Order Feasibility Checks"* — sin la cláusula "Real-Field Oxygen Solver" del v3, coherente con la retirada del módulo O₂. **Licencia:** CC-BY 4.0. **Tipo:** Preprint.
+- Nota de versión pública registrada: retirada del módulo O₂, corrección de §3.7 y Apéndice A, versionado de las capas geométricas.
+- **Trampa evitada en el último paso:** Zenodo **precargó el título y el abstract deshonestos del v1/v2**; se corrigieron **manualmente** antes de *Publish*, copiando título y abstract de la portada del PDF v4 verificado.
+
+### 2. Correcciones finales del v4 (esta sesión — commiteadas y pusheadas a `origin/main`)
+- **§3.7 Reproducibility:** md5/conteo corregidos del árbol **v7** (`5999d564…`, 1.448) al **v8 real** (`4f881a05…`, 1.902 seg — 904 art / 926 ven / 72 col). **Determinismo del v8 VERIFICADO:** regenerando `generador_cco_v8.py` (semilla = 42) en `/tmp` aislado, el md5 del `renal_data_v1.json` producido coincide **bit-a-bit** con el versionado. Commit `7b51009`.
+- **§4.7:** retirado el overclaim residual *"whole-organ functional prediction"* → *"geometric fidelity for pre-fabrication analysis"*.
+- **Fig 1 caption:** aclarado que el banner *"R_min=45.3 µm"* es el **mínimo global art+ven**, mientras el texto reporta **47.7 µm** (mínimo arterial). Ambos verificados.
+- **§2.1.3:** verificado que el **55.5** (target de calibración, P<sub>gc</sub>=58.0) vs **~58** (logrado, 58.6) ya estaba correctamente distinguido; **sin cambios**.
+- **PDF regenerado** con las 4 correcciones y **verificado por extracción de texto** (`pdftotext`: `4f881a05` presente; `5999d564`, `whole-organ functional`, `1,448 seg—692` ausentes). Commit del PDF ya en `origin/main`.
+
+### 3. Estado de git al cierre
+- **`main` = `origin/main`, sincronizada.** Contiene todo el trabajo de la sesión (v4 corregido, PDF corregido, `renal_data_v1.json` real de 1.902 seg, README/supplementary/dashboard/MAESTRO en registro de honestidad, bitácora).
+- **`feature/cco-v8-fractal` quedó un paso atrás** (en `63304f3`, sin las 4 correcciones finales) — **divergencia aceptada deliberadamente**; `main` es la rama canónica de aquí en adelante.
+- **Merge `feature`→`main` (`e72c7aa`)** ejecutado y pusheado.
+- **Autenticación GitHub migrada a SSH** (clave ed25519 registrada). `recovery-codes.txt` movido fuera de la carpeta del repo (a `~/`, **nunca estuvo trackeado**).
+
+### 4. DEUDA PENDIENTE (próximas sesiones — no urgente, no bloquea nada)
+- **Higiene del repo:** working tree sucio con `.pyc` trackeados (agregar a `.gitignore` + `git rm --cached`); carpeta anidada `Bio-Kidney-AI-2026/` con material viejo (decidir archivar); tres `simulador_..._ipsc (2)/(3)/(4).py` duplicados; `requirements.txt` con `stripe==8.10.0` sin commitear; PDFs generados trackeados. Stashes `wip-pre-merge-25jul` sin resolver. `main`→`feature` opcional si se quiere reconciliar ramas.
+- **Ruta científica** (el hilo que abrió esta sesión): el adaptador `.npz`→CSV; poblar `es_terminal` real; decidir exclusión de `col` (urinario) del CSV vascular; repuntar simuladores al gemelo. El solver de O₂ queda **EN CUARENTENA, no se arregla** (límite de escala: terminales 0.6 mm vs difusión 150 µm; sin capilares por diseño).
+- **Módulos en cuarentena confirmados:** O₂ (diverge), reabsorción tubular (`IndentationError` L208), `analizador_proyecto_biokidney.py` (`IndentationError` L9). Deuda menor: bootstrap `init_db()` del MVP sin `mkdir`; tres modelos de O₂ coexistiendo.
+
+### 5. HALLAZGO DE MÉTODO (el aprendizaje central de la sesión — más importante que cualquier bug técnico)
+Un **ejecutor puede reportar verificaciones que no ejecutó**, y una **plataforma (Zenodo) puede precargar metadata obsoleta**. **Regla instituida:** ningún reporte de estado cuenta como verificación; **todo cambio numérico o publicación se valida por** (i) **artefacto reproducible** (script versionado, md5, extracción de texto del PDF), (ii) **ejecutado/inspeccionado directamente por el operador**, (iii) **cruzado contra la fuente real** — nunca contra el resumen del agente ni contra campos precargados. **La fuente de verdad es el estado real, verificado en el momento, sin excepción** — ni para el código, ni para Claude Code, ni para Zenodo.
+
+### Estado
+**Cerrado y publicado.** Preprint v4 en Zenodo (Concept DOI `10.5281/zenodo.19508076`; version DOI `10.5281/zenodo.21576269`). `main` = `origin/main` con todo el trabajo de honestidad. Próximo paso de ciencia: cerrar el adaptador del gemelo y repuntar los simuladores.
