@@ -1472,3 +1472,32 @@ BITACORA previa (entradas ≤028), `MARCO_honestidad_epistemica_BioKidney.md`, `
 
 ### Estado
 **Cerrado.** Preprint v4 + reproducibilidad + sincronización commiteados (`7870574`, `141466b`/`03964c8`/`0153294`/`6565b32`, `9571d79`, `4988ca0`). El repo es clonable y su puerta de entrada (README/MAESTRO) dice lo mismo que el paper. Próximo paso de ciencia: cerrar el adaptador del gemelo.
+
+---
+
+## ENTRADA 030 — 25 de julio de 2026 — Corrección de reproducibilidad: el commit `141466b` versionó un stub, no el árbol
+
+**Estado:** **CORREGIDO.** Durante la auditoría de radios del Apéndice A del preprint v4 se descubrió que la "contribución central versionada" en Entrada 029 (§2) era, para el vaso vascular, un placeholder — no el dato real. Corregido y verificado desde clon limpio. Solo staging/commit; ningún contenido de archivo modificado en esta corrección de datos.
+
+### 1. El hallazgo
+- El commit `141466b` ("versionar `renal_data_v1.json` — contribución central") había commiteado por error un **stub sintético de 3 segmentos (473 bytes)**, no el **export real de 1.902 segmentos** (861 KB). El diff de ese commit sobre el JSON era `1 +` (una sola línea); el stub es un JSON de una línea, sin campo `sistema`, con `nivel` 0/1 y radios 2500/1200 µm de juguete.
+- **Causa:** `git add` del archivo equivocado — el disco tenía el stub en esa ruta en el momento de `141466b`; el export real de 1.902 segmentos **sobreescribió** el archivo en el working tree **después**, sin recommitear. Por eso aparecía como modificado (`M`, +40.220 líneas, sin stagear) hasta hoy.
+- **NO fue `.gitignore`:** `git check-ignore -v 02_vascular_cco/renal_data_v1.json` → no ignorado. Las reglas del `.gitignore` solo tapan variantes transitorias (`capa3a_arterial_v*.npz`, `capa3b_venoso_v1_*`, `capa*_auditoria_*`, `_backup_pre_seno/`).
+- **Los 10 `.npz` de Capas 0–4 del mismo commit SÍ eran reales:** verificado tamaño `git show HEAD:<path>` == working tree para los 10 (capa0 3.8 MB, capa2 2.3 MB, etc.). El único stub era el JSON.
+
+### 2. La consecuencia (por qué pasó desapercibido toda la sesión)
+- Todas las verificaciones de "reproducible por clonación" previas se hicieron contra el **working tree**, no contra un clon. Un `git clone` limpio habría entregado el **stub de 3 segmentos**, y la Tabla A1 del paper **no** habría sido reproducible desde el repo público.
+- El clone-test de `141466b` (Entrada 029) verificó **presencia** del archivo en el clon, no su **contenido** — y el stub pasó esa prueba.
+
+### 3. La corrección (commit `859f13e`)
+- `git add 02_vascular_cco/renal_data_v1.json` + commit único: `fix(datos): versionar renal_data_v1.json real (1902 segmentos) — 141466b habia commiteado un stub de 3 por error` (`1 file changed, 40220 insertions(+), 1 deletion(-)`).
+- **Verificado desde clon limpio** (`git clone .` → `/tmp/clone_test2`, no el working tree): **1.902 segmentos** en el JSON del clon; verificador (`verify_a1.py` con `ROOT` reapuntado al clon) → **Tabla A1 11/11 filas MATCH** (R_min/R_max, tol 0.1 µm) y **§3.1 8/8 cifras** (`452.4, 163.0, 265.3, 120.1, 222.1, 47.7, 137.5, 556.8`).
+- Contexto: esta corrección cierra la coherencia con la edición de L108 del v4 (commit `1582831`), que afirma que el JSON "holds the complete export … versioned in the git repository" — ahora **verdadera** respecto de lo commiteado.
+
+### 4. Regla de método derivada (extiende la regla de verificación-por-archivo de esta sesión)
+- Verificar **"reproducible por clonación"** exige un `git clone` real a un **directorio limpio** y correr el verificador **ahí**, no en el working tree.
+- **"El archivo está presente en el clon" ≠ "el archivo es correcto".** El clone-test de `141466b` verificó presencia, no contenido, y el stub pasó.
+- **Todo artefacto de datos versionado se valida por tamaño/contenido desde el clon**, no por presencia. (Para binarios: `git show HEAD:<path> | wc -c` vs working tree; para datos parseables: contar registros desde el clon.)
+
+### Estado
+**Corregido y verificado desde clon.** El JSON real (1.902 seg) está en `859f13e`. Pendiente sin ejecutar (decisión aparte): push de `feature/cco-v8-fractal` → `origin` y merge `feature` → `main` (el default público sigue en `b550317`). No se reescribió historial; ningún contenido de archivo científico fue modificado en esta corrección.
