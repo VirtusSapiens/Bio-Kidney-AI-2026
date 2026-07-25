@@ -105,7 +105,7 @@ Memory footprint was minimized through the use of `__slots__` declarations on th
 
 #### 2.1.5 Data Export
 
-All vascular geometry was exported as a segment-graph CSV file — per-segment records comprising a segment id, vascular-system assignment, hierarchical level, endpoint coordinates (mm), radius (µm), segment length (mm), inlet and outlet pressures (mmHg), and terminal status — for use by external analysis tools. (A JSON interchange schema, `renal_data_v1.json`, was defined for the same per-segment records and is the file the Blender visualization script points to; however, it is not currently populated with the full export — it holds only a placeholder stub — so no module is currently driven by it, and it is retained as a planned interchange format.)
+All vascular geometry was exported as a segment-graph CSV file — per-segment records comprising a segment id, vascular-system assignment, hierarchical level, endpoint coordinates (mm), radius (µm), segment length (mm), inlet and outlet pressures (mmHg), and terminal status — for use by external analysis tools. (The same per-segment records are also serialized to a JSON interchange file, `renal_data_v1.json`, which holds the **complete export**: 1,902 segments with per-segment radius, hierarchical level, inlet/outlet pressures, and terminal status, together with the 579 arterial terminal nodes and tree-level statistics. This populated file is the source of Figure 1 and of the geometric pipeline, and is the file the Blender and Matplotlib visualization scripts point to; it is versioned in the git repository (Section 3.5).)
 
 ### 2.2 iPSC Differentiation Kinetics
 
@@ -129,10 +129,6 @@ A five-segment nephron reabsorption model — proximal tubule (PT), descending a
 
 The framework was implemented in Python 3.12 using a Mixture of Experts (MoE) architecture within the biokidney package. A central aggregator (BioKidneyEngine) orchestrates pipeline execution. The web platform used FastAPI 0.104.1, SQLAlchemy 2.0.23, Loguru 0.7.2, and Docker. Scientific computation relied on NumPy 2.4.3, SciPy 1.17.1, and Matplotlib 3.10.8. The web platform backend used NumPy 1.26.2, SciPy 1.11.4, and Matplotlib 3.8.2 within an isolated deployment environment.
 
-![](images/image_f0353e.png)
-
-**Figure 4. Mixture of Experts (MoE) architecture and agentic AI workflow.** Schematic of the end-to-end pipeline. **(A)** Natural-language specification in VS Code + Claude Code CLI (Ubuntu, 16 GB RAM). **(B)** AI-assisted generation of five simulation modules. **(C)** CCO v8 producing 1,902 vascular segments with Beta(3, 1.2) cortical demand and two-pass Poiseuille calibration. **(D)** Structured export of the vascular segment graph to CSV (segment id, vascular-system assignment, hierarchical level, endpoint coordinates (mm), radius (µm), length (mm), inlet/outlet pressures (mmHg), terminal status) for external analysis tools; the `renal_data_v1.json` interchange schema that the Blender script targets is defined but not yet populated. **(E)** Blender batch import (single mesh, 15,216 vertices, 7,608 quads). **(F)** Reduced-order arithmetic feasibility check: literature K_f × computed mean net Starling pressure gives an order-of-magnitude bilateral figure (~115 mL/min; not a geometric GFR prediction, and not the output of an integrated solver). Computed mean terminal pressure 58.6 mmHg (spatial SD across the 579 arterial terminal nodes ±13.4 mmHg — descriptive dispersion, not an error bar on GFR). Dashed borders denote AI-assisted steps. Complete pipeline executes in under 60 seconds on consumer hardware.
-
 <div style="page-break-after: always;"></div>
 
 ---
@@ -146,11 +142,11 @@ The CCO v8 algorithm generated a hierarchical vascular tree comprising 1,902 seg
 
 Spatial coverage analysis against 1,300 cortically-biased demand points confirmed 100.0% parenchymal perfusion. Post-generation analysis verified that 63.1% of demand points (820/1,300) fell within the cortical zone (normalized ellipsoidal radius > 0.60), consistent with the physiological distribution of glomeruli in the human kidney, where 85% of nephrons are classified as cortical [8].
 
-**Vascular morphology.** The arterial tree exhibited a progressive caliber reduction spanning more than one order of magnitude: from 500.0 µm at the main renal artery (level 0) through 271–405 µm at the segmental arteries (level 2), 136–242 µm at the interlobular arteries (level 4), and down to 38.0 µm at the finest terminal arterioles (levels 9–10). The mean arterial radius was 123.2 µm. The venous tree mirrored this hierarchy with a maximum radius of 600.0 µm at the renal vein. Three-dimensional rendering of the complete vascular model in Blender confirmed visual coherence of the branching architecture: smooth caliber transitions at bifurcations, absence of vessel crossings or self-intersections, and clear anatomical organization with arterial branches radiating from the hilum toward the cortical surface and venous branches draining centripetally in a parallel but spatially distinct network.
+**Vascular morphology.** The arterial tree exhibited a progressive caliber reduction spanning nearly an order of magnitude: from 452.4 µm at the segmental root (level 1) through 163.0–265.3 µm at the arcuate arteries (level 4), 120.1–222.1 µm at the interlobular arteries (level 5), and down to 47.7 µm at the finest terminal arterioles (levels 9–11). The mean arterial radius was 137.5 µm. The venous tree mirrored this hierarchy with a maximum radius of 556.8 µm at the renal vein. Three-dimensional rendering of the complete vascular model in Blender confirmed visual coherence of the branching architecture: smooth caliber transitions at bifurcations, absence of vessel crossings or self-intersections, and clear anatomical organization with arterial branches radiating from the hilum toward the cortical surface and venous branches draining centripetally in a parallel but spatially distinct network.
 
-![](images/image_f02ddb.png)
+![](../02_vascular_cco/arbol_vascular_cco_v8.png)
 
-**Figure 1. Three-dimensional rendering of the CCO v8 renal vascular tree.** Complete vascular architecture rendered in Blender from `renal_data_v1.json`: arterial system (red, 904 segments), venous system (blue, 926 segments), and collecting system (yellow, 72 segments). Vessel caliber is proportional to segment radius (500 µm at the renal artery to 38 µm at terminal arterioles). The translucent ellipsoidal wireframe represents the kidney boundary (11.0 x 6.0 x 5.0 cm). Green points indicate 1,300 glomerular demand seeds generated with a Beta(3, 1.2) radial distribution, with 63.1% in the cortical zone. Note the higher vascular density in the peripheral cortical region compared to the medullary zone. All 915 bifurcations satisfy Murray's Law (α = 3.0, 100% compliance). Scale bar: 10 mm. The CCO v8 generation shown here is the vascular source from which the validated multi-layer geometric twin (Layers 0–4) is constructed.
+**Figure 1. Three-dimensional rendering of the CCO v8 renal vascular tree.** Complete vascular architecture generated from `renal_data_v1.json` and rendered with Matplotlib (3D plot, axes in mm): arterial system (red, 904 segments), venous system (blue, 926 segments), and collecting system (yellow, 72 segments). Vessel caliber is proportional to segment radius. Teal/green points indicate the 1,300 glomerular demand seeds generated with a Beta(3, 1.2) radial distribution, with 63.1% in the cortical zone. Note the higher vascular density in the peripheral cortical region compared to the medullary zone. All 915 bifurcations satisfy Murray's Law (α = 3.0, 100% compliance). The CCO v8 generation shown here is the vascular source from which the validated multi-layer geometric twin (Layers 0–4) is constructed.
 
 <div style="page-break-after: always;"></div>
 
@@ -160,18 +156,18 @@ The terminal arterial pressure field is an output of the CCO v8 geometry generat
 
 | Level | Anatomical correlate | Mean P (mmHg) | Radius range (µm) | n nodes |
 |-------|---------------------|---------------|-------------------|---------|
-| 0 | Renal artery | 100.0 | 500.0 | 1 |
-| 1 | Segmental arteries | 92.2 | 388.6–404.8 | 2 |
-| 2 | Lobar arteries | 87.1 | 271.3–350.5 | 10 |
-| 3 | Interlobar arteries | 81.3 | 189.9–295.5 | 34 |
-| 4 | Arcuate arteries | 74.6 | 136.2–242.2 | 72 |
-| 5 | Interlobular arteries | 67.6 | 104.1–203.3 | 122 |
-| 6 | Afferent arterioles | 60.7 | 77.0–175.2 | 192 |
-| 7 | Distal afferent art. | 55.3 | 55.5–144.7 | 220 |
-| 8 | Pre-glomerular art. | 50.1 | 50.4–119.5 | 152 |
-| 9 | Terminal arterioles | 48.0 | 42.3–92.1 | 72 |
-| 10 | Terminal arterioles | 45.1 | 41.1–68.6 | 24 |
-| 11 | Terminal arterioles | 51.2 | 47.3–55.0 | 4 |
+| 0 | Renal artery (synthetic root) | 100.0 | — | 1 |
+| 1 | Segmental arteries | 92.2 | 444.3–452.4 | 2 |
+| 2 | Lobar arteries | 87.1 | 329.9–377.6 | 10 |
+| 3 | Interlobar arteries | 81.3 | 230.6–319.4 | 34 |
+| 4 | Arcuate arteries | 74.6 | 163.0–265.3 | 72 |
+| 5 | Interlobular arteries | 67.6 | 120.1–222.1 | 122 |
+| 6 | Afferent arterioles | 60.7 | 91.2–189.2 | 192 |
+| 7 | Distal afferent art. | 55.3 | 66.4–157.0 | 220 |
+| 8 | Pre-glomerular art. | 50.1 | 59.9–129.8 | 152 |
+| 9 | Terminal arterioles | 48.0 | 50.8–99.7 | 72 |
+| 10 | Terminal arterioles | 45.1 | 47.7–74.5 | 24 |
+| 11 | Terminal arterioles | 51.2 | 55.2–59.9 | 4 |
 
 This pressure cascade is consistent with the renal hemodynamic profile described by Guyton and Hall [10], where the majority of pre-glomerular resistance is distributed across the interlobular and afferent arteriolar segments (levels 4–7), producing a cumulative drop of approximately 40 mmHg between the renal artery and the glomerular capillary bed.
 
@@ -240,7 +236,7 @@ The vascular tree generated by CCO v8 addresses one of the most persistent chall
 
 The cortically-biased demand distribution (63.1% cortical density via Beta(3, 1.2)) replicates the anatomical observation that the vast majority of human glomeruli reside in the renal cortex [8], a feature absent from the uniform distribution employed in v7. This is a **morphological correlate**, not a computed mechanism: the model reproduces the cortical concentration of terminal arterioles, which is *consistent with* the anatomical basis for cortical filtration surface, but the present pipeline does not compute a causal chain from arteriolar density to perfused-glomerulus count to filtration surface area to GFR. Any such link is offered as anatomical plausibility, not as a simulated dependency.
 
-The caliber profile of the generated tree — 500 µm at the renal artery, narrowing through segmental (388–405 µm), interlobular (104–203 µm), and afferent arteriolar (77–175 µm) vessels, to terminal arterioles at 38–92 µm — reproduces the vessel diameter ranges reported in human renal corrosion cast studies [11]. Three-dimensional visualization in Blender confirmed smooth caliber transitions at bifurcations and anatomically coherent spatial organization: arterial branches radiating centrifugally from the hilum toward the cortical surface, with the venous network draining centripetally in a spatially distinct but topologically parallel architecture. No vessel self-intersections or physically implausible crossings were observed.
+The caliber profile of the generated tree — 452.4 µm at the segmental root (level 1), narrowing through interlobular (level 5, 120.1–222.1 µm) and afferent arteriolar (level 6, 91.2–189.2 µm) vessels, to the finest terminal arterioles at 47.7 µm (levels 9–11) — reproduces the vessel-caliber ranges reported in human renal corrosion cast studies [11]. Three-dimensional visualization in Blender confirmed smooth caliber transitions at bifurcations and anatomically coherent spatial organization: arterial branches radiating centrifugally from the hilum toward the cortical surface, with the venous network draining centripetally in a spatially distinct but topologically parallel architecture. No vessel self-intersections or physically implausible crossings were observed.
 
 ### 4.3 The Critical Role of Glomerular Capillary Pressure
 
@@ -346,8 +342,6 @@ The complete framework is available as an open-source Python package to support 
 
 **Figure 3.** Comparative glomerular filtration rate: CCO v7 baseline vs. v8 calibrated model (Section 3.3).
 
-**Figure 4.** Mixture of Experts (MoE) architecture and agentic AI workflow (Section 2.6).
-
 ---
 
 \newpage
@@ -357,20 +351,20 @@ The complete framework is available as an open-source Python package to support 
 
 | Level | Anatomical correlate | n | R min (µm) | R max (µm) | Mean P (mmHg) |
 |:-----:|:---------------------|--:|----------:|-----------:|---------------:|
-| 0 | Main renal artery | 1 | 500.0 | 500.0 | 100.0 |
-| 1 | Segmental arteries | 2 | 388.6 | 404.8 | 92.2 |
-| 2 | Lobar arteries | 10 | 271.3 | 350.5 | 87.1 |
-| 3 | Interlobar arteries | 34 | 189.9 | 295.5 | 81.3 |
-| 4 | Arcuate arteries | 72 | 136.2 | 242.2 | 74.6 |
-| 5 | Interlobular arteries | 122 | 104.1 | 203.3 | 67.6 |
-| 6 | Afferent arterioles | 192 | 77.0 | 175.2 | 60.7 |
-| 7 | Distal afferent arterioles | 220 | 55.5 | 144.7 | 55.3 |
-| 8 | Pre-glomerular arterioles | 152 | 50.4 | 119.5 | 50.1 |
-| 9 | Terminal arterioles | 72 | 42.3 | 92.1 | 48.0 |
-| 10 | Terminal arterioles | 24 | 41.1 | 68.6 | 45.1 |
-| 11 | Terminal arterioles | 4 | 47.3 | 55.0 | 51.2 |
+| 0* | Main renal artery (synthetic root) | 1 | — | — | 100.0 |
+| 1 | Segmental arteries | 2 | 444.3 | 452.4 | 92.2 |
+| 2 | Lobar arteries | 10 | 329.9 | 377.6 | 87.1 |
+| 3 | Interlobar arteries | 34 | 230.6 | 319.4 | 81.3 |
+| 4 | Arcuate arteries | 72 | 163.0 | 265.3 | 74.6 |
+| 5 | Interlobular arteries | 122 | 120.1 | 222.1 | 67.6 |
+| 6 | Afferent arterioles | 192 | 91.2 | 189.2 | 60.7 |
+| 7 | Distal afferent arterioles | 220 | 66.4 | 157.0 | 55.3 |
+| 8 | Pre-glomerular arterioles | 152 | 59.9 | 129.8 | 50.1 |
+| 9 | Terminal arterioles | 72 | 50.8 | 99.7 | 48.0 |
+| 10 | Terminal arterioles | 24 | 47.7 | 74.5 | 45.1 |
+| 11 | Terminal arterioles | 4 | 55.2 | 59.9 | 51.2 |
 
-905 arterial nodes total. Mean terminal pressure: 58.6 +/- 13.4 mmHg. Physiological floor: 43 mmHg (P<sub>Bowman</sub> + pi<sub>gc</sub>).
+*Level 0 is a synthetic root node (the renal-artery inlet at 100.0 mmHg), not a segment present in `renal_data_v1.json`; its caliber is that of the level-1 segmental branches (444.3–452.4 µm). The 905 arterial-node total is the 904 arterial segments in the export plus this synthetic root. Mean terminal pressure: 58.6 +/- 13.4 mmHg. Physiological floor: 43 mmHg (P<sub>Bowman</sub> + pi<sub>gc</sub>).
 
 <div style="page-break-after: always;"></div>
 
