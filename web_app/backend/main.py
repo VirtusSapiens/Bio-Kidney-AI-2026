@@ -11,8 +11,9 @@ from typing import Dict, Any, Optional
 from web_app.backend.services.simulation_service import SimulationService
 from web_app.backend.database.models import init_db
 from web_app.backend.utils.logger import bk_logger
+from web_app.backend.routers import projects, preview, payments, reports, admin
 
-app = FastAPI(title="BioKidney AI — Platform API", version="2026.2.0")
+app = FastAPI(title="BioKidney AI — Platform API", version="2026.3.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,15 +26,29 @@ app.add_middleware(
 init_db()
 sim_service = SimulationService()
 
+# --- Routers del funnel MVP (6 pantallas) ---
+app.include_router(projects.router)
+app.include_router(preview.router)
+app.include_router(payments.router)
+app.include_router(reports.router)
+app.include_router(admin.router)
+
 
 # --- Request Models ---
 class SimulationRequest(BaseModel):
     params: Dict[str, Any] = {}
 
 
-# --- Frontend SPA ---
+# --- Frontend SPA: funnel de 6 pantallas (Spec Maestra) ---
 @app.get("/", response_class=HTMLResponse)
 async def serve_spa():
+    with open("web_app/frontend/index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+
+# --- Dashboard científico legacy (reutilizado como panel técnico admin) ---
+@app.get("/dashboard", response_class=HTMLResponse)
+async def serve_dashboard():
     with open("web_app/frontend/dashboard.html", "r", encoding="utf-8") as f:
         return f.read()
 

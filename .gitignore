@@ -8,3 +8,16 @@ __pycache__/
 *.pvd
 *.vtm
 *.vtp
+
+# Backup de estado transitorio del gemelo: geometría PRE-corrección del defecto
+# cortical (152/1300 glomérulos mal etiquetados). NO versionar junto a la geometría
+# buena — crea ambigüedad de reproducibilidad. Ver BITACORA entrada 028.
+08_gemelo_digital/_backup_pre_seno/
+
+# Geometría experimental / sweeps / auditorías / backups del gemelo (raíz):
+# variantes transitorias, NO la geometría canónica de las Capas 0-4. Ver BITACORA 028.
+capa3a_arterial_v*.npz
+capa3b_venoso_v1_*.npz
+capa3b_venoso_wrep*.npz
+capa*_auditoria_*.npz
+capa*_auditoria_*.txt
