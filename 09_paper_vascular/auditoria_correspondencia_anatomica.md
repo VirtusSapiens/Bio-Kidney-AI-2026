@@ -9,6 +9,13 @@ se incluye por ser la Capa 0.
 Beland 2010 → grosor cortical). El resto de filas [A] queda como `[CITA PENDIENTE: <dato>]`.
 No se inventó ninguna otra referencia. Fila `UMBRAL_CM` actualizada a `GROSOR_CORTICAL_MM`
 (el código cambió en la entrada 014 de bitácora: umbral fracción → mm absolutos, 6.6 mm).
+**Corrección 2026-08-02:** la atribución del **número 6.6 mm a Beland 2010** en la actualización
+anterior **fue un error**; el texto de 2026-07-06 se preserva sin modificar como registro de lo que
+se hizo ese día. La fuente correcta del valor es **Glodny B et al., BMC Urology 2009;9:19**
+(*cortical width* CW = 6.6 ± 1.9 mm, MDCT 64-cortes, n=2068 riñones). **Beland 2010 se conserva
+sólo como referencia metodológica** (protocolo de medición **perpendicular a la cápsula**), nunca
+como origen del número. Detalle en la fila `GROSOR_CORTICAL_MM` de la tabla y en el bloque
+"Citas verificadas colocadas".
 
 ## Propósito
 Inventario de todo parámetro que **afirma una magnitud física o una proporción anatómica**,
@@ -37,7 +44,7 @@ citas. Las filas [A] sin cita verificada llevan `[CITA PENDIENTE: <dato>]`; las 
 | `HILIO` (posición del hilio) | capa0_dominio.py:42 | [0, −30, 0] mm | sí (mm, vía B_SEMI) | **A** | Construcción: cara medial del elipsoide (= −B_SEMI); sin fuente independiente | `[CITA PENDIENTE: posición del hilio en la cara medial renal]` |  |
 | `CENTRO_SENO` (centro elipsoide de exclusión) | capa0_dominio.py:48 | [0, −34, 0] mm | sí (mm) | **A** | SIN DOCUMENTAR (comentario: "ajustado" para no partir el órgano) | `[CITA PENDIENTE: geometría/posición del seno renal]` |  |
 | `SEMIEJES_SENO` (dimensiones del seno renal) | capa0_dominio.py:49 | [22, 16, 11] mm | sí (mm) | **A** | SIN DOCUMENTAR (comentario: "ajustado") | `[CITA PENDIENTE: dimensiones del seno renal]` |  |
-| `GROSOR_CORTICAL_MM` (unión cortico-medular; reemplazó a `UMBRAL_CM` frac. en entrada 014) | capa0_dominio.py:58 | 6.6 mm (absoluto) | sí (mm) | **A** | DOCUMENTADO con cita (ver →); el antiguo `UMBRAL_CM=0.30` (fracción, línea 63) queda **deprecado** | **Beland MD, Walle NL, Machan JT, Cronan JJ. AJR 2010;195(2):W146-149**; espesor cortical renal por ecografía: **media 5.9 mm, rango 3.2–11.0 mm** | **[OK]** 6.6 mm cae **dentro del rango 3.2–11.0 mm** (por encima de la media 5.9 mm). Nota: el comentario en código citaba "MDCT n=2068" (no verificado); la fuente **verificada** es Beland (ecografía) |
+| `GROSOR_CORTICAL_MM` (unión cortico-medular; reemplazó a `UMBRAL_CM` frac. en entrada 014) | capa0_dominio.py:58 | 6.6 mm (absoluto) | sí (mm) | **A** | DOCUMENTADO con cita (ver →); el antiguo `UMBRAL_CM=0.30` (fracción, línea 63) queda **deprecado** | **Glodny B, Unterholzner V, Taferner B, Hofmann KJ, Rehder P, Strasak A, Petersen J. BMC Urology 2009;9:19** (DOI 10.1186/1471-2490-9-19); *cortical width* por MDCT 64-cortes, **2068 riñones / 1040 adultos asintomáticos**: **CW = 6.6 ± 1.9 mm (dcho), 6.6 ± 2.0 mm (izdo)**; ICC 0.96.<br>**DEFINICIÓN DE CW (*cortical width*):** distancia **perpendicular desde la cápsula renal hasta la base de la pirámide medular** — es decir, **corteza sola** —, medida sobre **cortes axiales** del MDCT, **evitando las columnas de Bertin y el seno renal**.<br>**NO CONFUNDIR con *parenchymal width* (PW) ≈ 15.5 mm**, que es cápsula → **seno renal** e incluye **corteza + médula**. Son variables **distintas** del mismo estudio: **el gemelo usa CW (6.6 mm) como umbral córtex/médula, NO PW** | **[OK]** coincidencia **exacta** con el valor del código. **ATRIBUCIÓN CORREGIDA (2026-07-30):** esta fila citaba antes a Beland MD et al. AJR 2010;195(2):W146-149 como fuente "verificada" y trataba el comentario "MDCT n=2068" del código como no verificado — **era al revés**. Beland es n=25 **pacientes con ERC** (edad media 73) y da media **5.9 mm**, que **no** sostiene el 6.6; sólo lo contiene en su rango 3.2–11.0 (validación *post hoc*, no procedencia). El comentario de `capa0_dominio.py:58` y el preprint v4 §299 ("cortical width, MDCT n = 2068") son **correctos**. Beland se conserva como referencia **metodológica** secundaria: es quien define el protocolo explícito (plano sagital, sobre pirámide medular, **perpendicular a la cápsula**), orientación que Glodny no detalla |
 | `N_PIRAMIDES` (pirámides medulares) | capa0_dominio.py:55 | 10 | sí (conteo) | **A** | DOCUMENTADO en comentario: "rango humano fisiológico 8–18" (sin cita formal) | `[CITA PENDIENTE: nº de pirámides medulares (rango 8–18)]` |  |
 | `CONE_HALF_ANGLE_DEG` (semiángulo cono piramidal) | capa0_dominio.py:56 | 22.0 ° | sí (grados) | **A** | SIN DOCUMENTAR | `[CITA PENDIENTE: geometría/ángulo de la pirámide medular]` |  |
 | `N_POINTS` (puntos de parénquima muestreados) | capa0_dominio.py:58 | 200 000 | sí (conteo) | **B** | Escala computacional (resolución de muestreo, no anatómica) | — (no requiere, [B]) | — |
@@ -100,16 +107,23 @@ Los `SEED = 2026` (todas las capas) no son dimensionales y se omiten.
   ([A]) del árbol arterial y venoso tampoco tienen ese anclaje todavía.
 - **`GROSOR_CORTICAL_MM = 6.6 mm`** (antes `UMBRAL_CM = 0.30` fracción): tras la entrada 014 el
   umbral cortico-medular es **absoluto en mm** e invariante al normalizador. Cita **verificada**
-  (Beland 2010): 6.6 mm dentro del rango 3.2–11.0 mm. **Discrepancia a resolver:** el comentario
-  en `capa0_dominio.py:58` cita "MDCT n=2068", que **no** es la fuente verificada (Beland es
-  ecografía) — conviene corregir el comentario del código a la referencia real.
+  (**Glodny 2009**, BMC Urology 9:19): *cortical width* **CW = 6.6 ± 1.9 mm** por MDCT 64-cortes,
+  **n=2068 riñones / 1040 adultos asintomáticos** — coincidencia **exacta** con el valor del código.
+  **DISCREPANCIA RESUELTA (2026-08-02):** este punto afirmaba antes que el comentario de
+  `capa0_dominio.py:58` ("MDCT n=2068") **no** era la fuente verificada y que convenía **corregir el
+  comentario del código** hacia Beland. **Era exactamente al revés:** el comentario del código era
+  correcto y el error de atribución estaba **en este documento**. **No hay nada que corregir en el
+  código** — `capa0_dominio.py:58` ancla a Glodny 2009 y así debe quedar. Beland 2010 (ecografía,
+  n=25 pacientes con ERC, media 5.9 mm) **no sostiene el 6.6 mm**; se conserva únicamente como
+  referencia **metodológica** (protocolo de medición **perpendicular a la cápsula**), que es además
+  la métrica que implementa la corrección de depth de Capa 0 (método B).
 
 ---
 
 ## Resultado: lista de trabajo real (clase [A] SIN cita verificada)
 
 De los **14 parámetros [A]** originalmente SIN DOCUMENTAR, **4 quedan ahora con cita verificada**
-(3 semiejes → Emamian 1993; grosor cortical → Beland 2010). **Quedan 10 pendientes** de fuente:
+(3 semiejes → Emamian 1993; grosor cortical → Glodny 2009). **Quedan 10 pendientes** de fuente:
 
 1. `CENTRO_SENO = [0,−34,0] mm` (capa0_dominio.py:48) — posición del seno renal
 2. `SEMIEJES_SENO = [22,16,11] mm` (capa0_dominio.py:49) — dimensiones del seno renal
@@ -127,6 +141,15 @@ De los **14 parámetros [A]** originalmente SIN DOCUMENTAR, **4 quedan ahora con
   Pedersen JF, Ytte L. AJR 1993;160(1):83-86** (DOI 10.2214/ajr.160.1.8416654).
 - `GROSOR_CORTICAL_MM` (6.6 mm, grosor cortical) → **Beland MD, Walle NL, Machan JT, Cronan JJ.
   AJR 2010;195(2):W146-149** (media 5.9 mm, rango 3.2–11.0 mm; 6.6 mm dentro del rango).
+  > **[ATRIBUCIÓN ERRÓNEA — CORREGIDA 2026-08-02]** La línea anterior se preserva **sin modificar**
+  > como registro de lo que se colocó el 2026-07-06, pero **su atribución es incorrecta**. El
+  > **número 6.6 mm** procede de **Glodny B, Unterholzner V, Taferner B, Hofmann KJ, Rehder P,
+  > Strasak A, Petersen J. BMC Urology 2009;9:19** (DOI 10.1186/1471-2490-9-19): *cortical width*
+  > **CW = 6.6 ± 1.9 mm**, MDCT 64-cortes, **n=2068 riñones / 1040 adultos asintomáticos**.
+  > El razonamiento original ("6.6 mm dentro del rango 3.2–11.0 mm") era **validación *post hoc*,
+  > no procedencia**: Beland es n=25 **pacientes con ERC** (edad media 73) y su media es 5.9 mm.
+  > **Beland conserva sólo su rol metodológico** — define el protocolo de medición **perpendicular
+  > a la cápsula**, orientación que Glodny no detalla — **nunca como fuente del número 6.6 mm**.
 
 **Clase [A] con justificación en código pero cita aún pendiente de formalizar (no en la lista
 de 10, pero conviene formalizar):** `N_PIRAMIDES=10` (rango 8–18), `MURRAY_EXP=3.0` (Ley de
