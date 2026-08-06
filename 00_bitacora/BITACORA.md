@@ -1538,3 +1538,201 @@ Un **ejecutor puede reportar verificaciones que no ejecutó**, y una **plataform
 
 ### Estado
 **Cerrado y publicado.** Preprint v4 en Zenodo (Concept DOI `10.5281/zenodo.19508076`; version DOI `10.5281/zenodo.21576269`). `main` = `origin/main` con todo el trabajo de honestidad. Próximo paso de ciencia: cerrar el adaptador del gemelo y repuntar los simuladores.
+
+---
+
+## ENTRADA 032 — 3 de agosto de 2026 (registrada el 6 de agosto) — Capa 0: corrección del campo de profundidad cortical, de cuerda radial a distancia perpendicular (método B)
+
+**Estado:** **CORREGIDO Y VERIFICADO.** El campo `depth_cortical_mm` de Capa 0 medía una magnitud que no era un espesor. Corregido en el commit `fbb6614`. Impacto recomputado desde `capa0_dominio.npz` y validado desde terminal. **Pasivo abierto: Capas 1-4 no regeneradas.**
+
+### 1. Qué se corrigió
+- **Antes:** la profundidad cortical era la **cuerda radial** desde el centroide del elipsoide hasta la cápsula, a lo largo del rayo centroide→punto. Esa función se conserva deprecada como `capsule_distance_radial` (`capa0_dominio.py:128`), con cuerpo `return np.clip(rsurf_main - r_main, 0.0, None)`.
+- **Ahora:** la profundidad es la **distancia euclídea al punto más cercano de la cápsula externa** (elipsoide 55/30/18). Implementada en `capsule_distance` (`capa0_dominio.py:221`), cuerpo en `:244-245`:
+  ```python
+  x = _nearest_point_ellipsoid(coords, SEMIEJES)
+  return np.linalg.norm(np.atleast_2d(coords) - x, axis=-1)
+  ```
+- El pie de la perpendicular lo resuelve `_nearest_point_ellipsoid` (`capa0_dominio.py:140`) por multiplicador de Lagrange con bisección vectorizada, reparametrizada en `mu = lam + min(a_i^2)`. Esa reparametrización **no es cosmética**: en los puntos que caen sobre un plano coordenado la raíz degenera justo en el borde del bracket, y el docstring (`:156-163`) registra las dos formas documentadas de equivocarse en silencio (10.125 mm y 12.000 mm en `(0,-18,0)`, contra los 11.906 correctos). El bloque `VERIFICACION` de `main()` incluye 7 casos de guarda numérica para esto (`capa0_dominio.py:513-553`; la lista de casos en `:522-530`).
+- **Cadena vigente:** `main()` (`:388`) → `compute_depth()` (`:248`) → `capsule_distance()` (`:221`) → `_nearest_point_ellipsoid()` (`:140`); persistencia en `:437-438` (`depth`, `depth_cortical_mm`).
+
+### 2. Por qué: se comparaban dos magnitudes distintas
+- El umbral córtico-medular es `GROSOR_CORTICAL_MM = 6.6` (`capa0_dominio.py:61`), y la fuente lo define como **espesor cortical PERPENDICULAR a la cápsula** (*cortical width*).
+- La cuerda radial **no es un espesor**: sobreestima el espesor real en todo punto cuyo rayo no sea normal a la superficie, y tanto más cuanto más oblicuo es. En un elipsoide achatado (55/30/18) la oblicuidad es grande en amplias zonas.
+- Comparar 6.6 mm (perpendicular) contra una distancia radial mezclaba unidades conceptuales distintas. El docstring de `capsule_distance` (`:225-233`) deja la justificación anclada en el propio código.
+- Propiedad que se sigue del cambio y que sirve de control: la perpendicular es **≤** la radial en todo punto. Recomputado: `perp <= radial en todo punto: True`. Por eso el reetiquetado sólo puede ir en un sentido.
+
+### 3. Impacto verificado (recomputado desde `capa0_dominio.npz`, N = 200 000)
+| Magnitud | Córtex | % |
+|---|---|---|
+| Radial (deprecada) | 92 624 | **46.31 %** |
+| Perpendicular (vigente, la del `.npz`) | 117 703 | **58.85 %** |
+
+- **Reetiquetados: 25 079 puntos = 12.54 % del parénquima.**
+- **Dirección: 25 079 médula→córtex, 0 córtex→médula.** Estrictamente unidireccional, como exige `perp <= radial`.
+- **Reparto: 46.31 / 53.69 → 58.85 / 41.15.**
+- Coincide con lo declarado en el mensaje de `fbb6614` (`reetiqueta 25079 pts medula->cortex; reparto 46.3/53.7 -> 58.85/41.15`).
+- Comando de reproducción (no escribe en disco; el guard `if __name__ == "__main__":` de `:610` impide que el import dispare `main()`):
+  ```bash
+  .venv/bin/python -c "import numpy as np, capa0_dominio as C; d=np.load('capa0_dominio.npz',allow_pickle=True); co=d['coords'].astype(np.float64); dm=d['depth_cortical_mm'].astype(np.float64); rad=C.capsule_distance_radial(co); G=float(C.GROSOR_CORTICAL_MM); cr,cp=rad<G,dm<G; print('cortex radial',int(cr.sum()),round(100*cr.mean(),2),'% | cortex perp',int(cp.sum()),round(100*cp.mean(),2),'%'); print('reetiquetados',int((cr!=cp).sum()),round(100*(cr!=cp).mean(),2),'% | med->cortex',int((~cr&cp).sum()),'cortex->med',int((cr&~cp).sum()))"
+  ```
+
+### 4. El contrafactual: la medida de lo que se evitó
+La corrección del método B se apoya sobre una corrección anterior — que la profundidad dependa **sólo** de la cápsula, no del mínimo con la pared del seno. Cuantificado hoy sobre el `.npz` vigente:
+
+- **31 311 puntos (15.656 %)** están más cerca de la pared del seno que de la cápsula (`dist_seno < dist_main`).
+- De ellos, sólo **4 097** son córtex bajo el criterio actual — corticales legítimos de la esquina cápsula/seno.
+- Si el campo persistido usara `np.minimum(dist_capsula, dist_seno)`, el córtex sería **99 004 = 49.50 %** y **29 307 etiquetas diferirían** de las actuales.
+
+Esos 29 307 puntos son la magnitud del *córtex peri-sinusal falso* que la separación cápsula/seno eliminó: puntos interiores marcados corticales por vecindad a una superficie **interna**, bajo la cual hay médula y grasa sinusal, no corteza.
+
+Nota de trazabilidad: `nearest_surface_distance` (`capa0_dominio.py:111`) sigue en el archivo, con su `np.minimum` intacto en `:125`, pero **sin un solo llamador en todo el repositorio**. Es código muerto declarado — su docstring (`:112-119`) anuncia el retiro y la razón. Su permanencia es deliberada, no un residuo.
+
+### 5. Corrección de atribución (separada del cambio de código)
+Esta corrección es **independiente** del método B y no altera ninguna cifra del gemelo. Afecta a de dónde procede el número 6.6 mm.
+
+- **El NÚMERO 6.6 mm procede de Glodny B, Unterholzner V, Taferner B, Hofmann KJ, Rehder P, Strasak A, Petersen J. BMC Urology 2009;9:19** (DOI 10.1186/1471-2490-9-19): *cortical width* CW = 6.6 ± 1.9 mm (dcho), 6.6 ± 2.0 mm (izdo), MDCT 64-cortes, **n = 2068 riñones / 1040 adultos asintomáticos**, ICC 0.96.
+- **El MÉTODO procede de Beland MD, Walle NL, Machan JT, Cronan JJ. AJR 2010;195(2):W146-149**, que define el protocolo explícito de medición **perpendicular a la cápsula** (plano sagital, sobre pirámide medular) — orientación que Glodny no detalla.
+- **La atribución previa del NÚMERO a Beland era errónea.** Beland es n=25 pacientes con ERC (edad media 73) y su media es 5.9 mm: contiene el 6.6 en su rango 3.2–11.0 mm, lo que es validación *post hoc*, **no procedencia**.
+- **Alcance de la propagación (contado con grep, no de memoria):** `grep -rn "Beland"` sobre el repo (excluyendo `.git`, `.venv`, `__pycache__`) devuelve **10 ocurrencias en 2 archivos**. Desglose:
+  - `capa0_dominio.py:58` — **1 ocurrencia, ya correcta**: `# ANCLA: Glodny et al. 2009, MDCT n=2068 (NO Beland; ver correccion de atribucion).` El código **nunca** atribuyó el número a Beland.
+  - `09_paper_vascular/auditoria_correspondencia_anatomica.md` — **9 ocurrencias**. De ellas, **un único sitio preserva el texto erróneo literalmente**: `:142-143`, la línea del listado de citas colocadas el 2026-07-06 (`GROSOR_CORTICAL_MM (6.6 mm, grosor cortical) → Beland MD, Walle NL, Machan JT, Cronan JJ. AJR 2010;195(2):W146-149`). Se conserva **a propósito, sin modificar**, con el bloque de corrección inmediatamente debajo (`:144-152`). Las 8 ocurrencias restantes (`:9`, `:12`, `:15`, `:47`, `:114`, `:116`, `:150`, `:151`) son **texto de la corrección**, no propagación del error.
+- **Conclusión del alcance:** la atribución errónea **no está viva en ningún punto del repo**. Está preservada en un sitio, marcada como errónea en ese mismo sitio. No queda nada que corregir por este concepto.
+- Salvedad de método: el grep cubre archivos de texto. **No cubre el contenido de los PDF** del repo (`00_bitacora/*.pdf`, preprints). Si la atribución a Beland viajó a un PDF publicado, ese conteo no lo detecta y queda fuera de esta entrada.
+
+### 6. Limitación declarada: cápsula fantasma
+El elipsoide principal es una superficie **cerrada**, pero el tramo excavado por el seno no existe como cápsula real. Un punto mide contra cápsula fantasma si el pie de su perpendicular cae dentro del elipsoide del seno.
+
+- **596 puntos = 0.298 % del parénquima** miden contra cápsula fantasma.
+- De ellos, **209 están etiquetados córtex**.
+- Todos a **≤ 4.1 mm** de la pared del seno (mediana **0.75 mm**): es una banda delgada peri-sinusal, no un volumen difuso.
+- La zona es la misma que Glodny excluye explícitamente en su protocolo (evitar columnas de Bertin y seno renal), de modo que la limitación cae donde la fuente tampoco mide.
+- Cuantificado en vivo por el bloque `VERIFICACION` de `main()` (`capa0_dominio.py:570-588`).
+
+### 7. La trampa evitada — mecanismo, no anécdota
+Durante la auditoría del **2026-08-06** se emitió un misdiagnóstico: se reportó como "inconsistencia interna abierta" que `capa0_dominio.py:53-55` declarase que la pared del seno ya no genera córtex mientras `:123-125` seguía devolviendo `np.minimum(dist_main, dist_seno)`. **Se creyó reabierto un bug que estaba cerrado desde julio.**
+
+**Mecanismo del error, paso a paso:**
+1. Los documentos `09_paper_vascular/diagnostico_causa_raiz_seno.md` y `09_paper_vascular/diagnostico_seguridad_campo_profundidad.md` (ambos del **2026-07-05**, previos a `fbb6614`) afirman que `compute_depth` **usa** `nearest_surface_distance`, y lo clasifican `[DEPENDE-AMBAS]` (`diagnostico_seguridad_campo_profundidad.md:22`).
+2. Esos documentos citan **rangos de línea caducos** (`:98-111`, `:114-128`, `:268`, `:271-272`). En el archivo actual esos rangos apuntan a **otras funciones**. La cita numérica aparenta precisión y por eso no se cuestiona.
+3. La búsqueda por nombre (`grep "nearest_surface_distance"`) devuelve **7 aciertos**, de los cuales **sólo 1 es la definición** y **ninguno es una llamada**. El resto son prosa de los `.md` obsoletos y la copia de respaldo. Un conteo de aciertos sin distinguir *definición / llamada / prosa* sugiere una función viva.
+4. Se leyó el cuerpo de la función (`:121-125`) pero **no su docstring** (`:112-119`), que dice literalmente `[CONSERVADA - ya NO define la profundidad cortical]` y explica que la etiqueta usa ahora `capsule_distance()`. La respuesta estaba a cuatro líneas de donde se miró.
+
+**Reglas derivadas:**
+- **Un `grep` por nombre no es un grafo de llamadas.** Separar siempre definición, invocación y mención en prosa antes de afirmar que algo está vivo.
+- **La documentación forense caduca y su precisión aparente la hace peligrosa.** Un `.md` con `archivo:línea` envejece peor que uno sin ellos, porque invita a confiar sin recomprobar. → Acción tomada: ambos documentos llevan ahora un bloque de aviso al inicio (2026-08-06) que los declara superados por `fbb6614` y remite a esta entrada. Se conservan íntegros por su valor forense.
+- **Leer el docstring antes de leer el cuerpo.** El estado declarado de una función vive en su docstring; el cuerpo sólo dice qué calcularía si alguien la llamara.
+- **Antes de reportar un bug reabierto, comprobar contra el artefacto**, no contra el código fuente. Bastaba comparar `depth_cortical_mm` del `.npz` con ambas funciones candidatas: `max |depth_npz − capsule_distance| = 1.9e-06 mm` (redondeo `float32`) frente a `max |depth_npz − nearest_surface_distance| = 14.03 mm`. Eso zanja la pregunta en un comando.
+- Esta entrada extiende la regla instituida en la Entrada 031 (§5): **ningún reporte cuenta como verificación**. Aquí el reporte defectuoso lo produjo el agente auditor, y lo que lo desmintió fue el artefacto.
+
+### 8. Commit de referencia
+- **`fbb6614`** — *"Capa 0: corrige depth cortical de radial a perpendicular (Glodny 2009 CW, 6.6mm)"*, 2026-08-03 23:58:54 -0500.
+- Alcance: `capa0_dominio.py` (+219 líneas), `capa0_dominio.npz` (Bin 3875256 → 3859371 bytes), `09_paper_vascular/auditoria_correspondencia_anatomica.md` (+33). Total: 3 archivos, 242 inserciones, 10 supresiones.
+- `coords` bit-idéntico respecto del estado anterior: **sólo cambian etiquetas, no geometría**. SVD de la nube regenerada: rango 3.
+- Backup del estado previo en `_backup_pre_depth_2026-07-30/`.
+
+### Estado
+**Corregido en Capa 0; verificado desde terminal.** El `.npz` vigente contiene la profundidad perpendicular y el reparto 58.85/41.15.
+
+**PASIVO ABIERTO — Capas 1-4 NO regeneradas.** Declarado en el propio mensaje de `fbb6614` (`Capas 1-4 NO regeneradas, quedan desincronizadas hasta la cascada`) y vigente desde el 2026-08-03. Las capas 1-4 se construyeron sobre el etiquetado córtex/médula **anterior**, en el que 25 079 puntos hoy corticales figuraban como médula. Toda capa que siembre desde el pool `region == "cortex"` — Capa 1 siembra los 1300 glomérulos así — está desincronizada respecto de Capa 0. **Hasta que corra la cascada, Capa 0 y Capas 1-4 no describen el mismo riñón.** Ninguna cifra que cruce ambos niveles debe publicarse en ese estado.
+
+---
+
+## ENTRADA 033 — 6 de agosto de 2026 — El seno renal: supuesto geométrico sin ancla morfométrica, y la distinción de magnitudes del volumen
+
+**Estado:** **DECLARADO, NO ANCLADO.** El seno renal del gemelo es un supuesto de diseño geométricamente consistente, sin cita morfométrica que lo sostenga. Esta entrada fija su estado epistémico y separa dos magnitudes que se venían confundiendo.
+
+### 1. Clasificación epistémica: SUPUESTO GEOMÉTRICAMENTE CONSISTENTE, no anclado
+- Los dos parámetros que definen el seno son `CENTRO_SENO = [0,−34,0]` (`capa0_dominio.py:48`) y `SEMIEJES_SENO = [22,16,11]` (`capa0_dominio.py:49`).
+- **Ninguno tiene ancla en literatura.** Ambos figuran como pendientes en la auditoría de correspondencia anatómica: `09_paper_vascular/auditoria_correspondencia_anatomica.md:128-129`, puestos 1 y 2 de los **10 parámetros clase [A] sin cita** (`1. CENTRO_SENO = [0,−34,0] mm (capa0_dominio.py:48) — posición del seno renal` / `2. SEMIEJES_SENO = [22,16,11] mm (capa0_dominio.py:49) — dimensiones del seno renal`).
+- Lo que sí está anclado es el elipsoide **principal**: semiejes 55/30/18 → Emamian SA, Nielsen MB, Pedersen JF, Ytte L. AJR 1993;160(1):83-86. El seno se talló **por dentro** de esa forma anclada, calibrado por criterio geométrico ("forma de frijol sin partir el órgano en lóbulos"), no por morfometría del seno.
+- El propio código lo declara en el comentario de `capa0_dominio.py:45-47`: `Centrado mas hacia afuera en -Y; al restarse del dominio crea la invaginacion del frijol. Ajustado para ocupar la zona media de la cara medial sin partir el organo en dos.`
+- **Consecuencia para publicación:** el seno es un supuesto de diseño declarado. Es legítimo como geometría idealizada paramétrica; **no** es reconstrucción anatómica ni está validado contra población. Cualquier figura o texto que lo presente debe decirlo.
+
+### 2. Distinción de magnitudes — el punto central de esta entrada
+Se venían usando indistintamente dos números que **no son la misma cosa**:
+
+| Magnitud | Valor | Qué es |
+|---|---|---|
+| **Elipsoide del seno completo** | **16.22 mL** (16 218.996 mm³) | Volumen analítico del elipsoide de exclusión: `4/3·π·22·16·11` |
+| **Intersección con el parénquima** | **3.9599 mL** (3 959.877 mm³) | Volumen **excluido** del elipsoide principal, lo que `capa0_dominio.py:430` calcula |
+
+- **3.96 mL NO es el volumen del seno renal.** Es el volumen **excluido por intersección**: la parte del elipsoide del seno que cae dentro del elipsoide principal y por tanto se resta del parénquima. Los otros ~12.26 mL del elipsoide del seno quedan **fuera** del elipsoide principal y no recortan nada.
+- Expresión exacta que lo produce, `capa0_dominio.py:426-430`:
+  ```python
+  # 6) Volumenes (Monte Carlo)
+  vol_main = 4.0 / 3.0 * np.pi * np.prod(SEMIEJES)
+  accept_frac = n_accept / n_tried           # parenquima / elipsoide principal
+  vol_parenquima = vol_main * accept_frac
+  vol_seno_excluido = vol_main - vol_parenquima
+  ```
+- Valores en el `.npz` vigente: `vol_elipsoide_mm3 = 124407.0690821558`, `vol_parenquima_mm3 = 120447.19207327077`, diferencia **3959.8770088850288 mm³**.
+
+**Etiquetado incorrecto localizado en el repo (grep, no memoria):**
+- `00_bitacora/BITACORA.md:690` — `- Volumen parénquima: 120.447 mm³ (96.8% del elipsoide; seno excluye 3.960 mm³).` Esta línea es **correcta**: dice *"seno excluye"*, no *"volumen del seno"*. Se deja como está.
+- `00_bitacora/_archivo/2026-06-12_bitacora_gemelo_digital.md:68` — texto idéntico, igualmente correcto.
+- **`grep -rn "3\.96\|3,96"` sobre el repo no devuelve ningún sitio que etiquete 3.96 como "volumen del seno renal".** El único otro acierto, `09_paper_vascular/diagnostico_holgura_pelvis.md:20` (`pared_art 3.96`), es una **holgura de pared arterial en mm**, magnitud distinta y sin relación.
+- **La cadena `3.96 mL` no existe en ningún archivo del repo.** El número nunca se ha escrito en mililitros en disco. Si aparece en material externo (deck, preprint, correspondencia) etiquetado como volumen del seno, ese material está mal y esta entrada es la referencia para corregirlo.
+
+### 3. Fragilidad: el número no se persiste
+- `vol_seno_excluido` se calcula en `capa0_dominio.py:430` y **nunca se guarda**. El bloque `np.savez_compressed` (`:433-457`) persiste `vol_parenquima_mm3` (`:451`) y `vol_elipsoide_mm3` (`:452`), pero no el volumen excluido. Las claves de volumen del `.npz` son exactamente `['vol_parenquima_mm3', 'vol_elipsoide_mm3']`.
+- El valor sólo existe como salida de consola, `capa0_dominio.py:470-471`:
+  ```python
+  print(f"  Seno excluido       : {vol_seno_excluido:11.1f} mm^3  "
+        f"({100.0 * (1 - accept_frac):5.2f} % del elipsoide)")
+  ```
+- **Por tanto, toda cita del número hoy es transcripción de consola o resta manual**, no lectura de un campo almacenado. Es el mismo patrón de fragilidad que la Entrada 030 (el stub de `renal_data_v1.json`): un dato que se afirma pero cuyo soporte versionado no existe.
+- Mitigación mientras no se corrija — re-derivarlo del `.npz`, sin escribir en disco:
+  ```bash
+  .venv/bin/python -c "import numpy as np; d=np.load('capa0_dominio.npz'); print((float(d['vol_elipsoide_mm3'])-float(d['vol_parenquima_mm3']))/1000,'mL')"
+  ```
+- **Corrección propuesta y DIFERIDA:** añadir en `capa0_dominio.py` la línea `vol_seno_excluido_mm3=np.float64(vol_seno_excluido),` inmediatamente después de `:452`. **No aplicada.** Aplicarla obliga a re-ejecutar `capa0_dominio.py`, que sobrescribe `capa0_dominio.npz`; con las Capas 1-4 ya desincronizadas (Entrada 032, §Estado), esa regeneración debe decidirse **dentro de la cascada**, no de forma aislada.
+
+### 4. Naturaleza estocástica del número
+- `vol_seno_excluido` **no es analítico**: es un estimador **Monte Carlo** por muestreo con rechazo. `sample_parenchyma` (`capa0_dominio.py:272`) genera puntos uniformes en el elipsoide principal y rechaza los que caen dentro del seno (`:292`); la fracción de aceptación estima el volumen relativo.
+- Parámetros que lo determinan: **`SEED = 2026`** (`capa0_dominio.py:71`) y **`N_POINTS = 200_000`** (`capa0_dominio.py:70`).
+- Es reproducible bit a bit con esa semilla, pero **cambiar la semilla cambia el último dígito**. Los 4 decimales de 3.9599 mL no son precisión física: son precisión de un muestreo concreto. Reportar el número sin declarar semilla y N es reportar de más.
+- Reproducción desde cero, re-ejecutando el muestreo sin escribir en disco:
+  ```bash
+  .venv/bin/python -c "import numpy as np, capa0_dominio as C; rng=np.random.default_rng(int(C.SEED)); c,t,a=C.sample_parenchyma(int(C.N_POINTS),rng); vm=4/3*np.pi*np.prod(C.SEMIEJES); print('seno excluido mm3 =',vm-vm*a/t,' -> mL =',(vm-vm*a/t)/1000)"
+  ```
+
+### 5. Orientación y rotación: simplificaciones de diseño declaradas
+- El seno es un **elipsoide alineado con los ejes**, sin rotación: `SEMIEJES_SENO = [22,16,11]` se aplica directamente sobre X/Y/Z. En el riñón real el eje del seno no es paralelo al eje del órgano.
+- Está **centrado en X = 0** (`CENTRO_SENO = [0,−34,0]`): perfectamente simétrico respecto del ecuador del órgano, sin la asimetría supero-inferior anatómica.
+- Está **centrado en Z = 0**: sin inclinación anterior-posterior.
+- El hilio se define como el punto medial puro `HILIO = [0,−30,0]` (`capa0_dominio.py:42`), no como una región.
+- **Las tres son simplificaciones de diseño, no hallazgos.** Se declaran aquí para que ninguna figura las presente como anatomía. El seno del gemelo reproduce la *topología* (invaginación medial, forma de frijol, papilas drenando hacia la cavidad) sin reproducir la *orientación*.
+- Consistencia interna sí verificada: 0 puntos de parénquima dentro del seno (rechazo por construcción, `:292`) y las 10 pirámides medulares apuntan sus papilas a la pared del seno (`build_pyramids`, `capa0_dominio.py:305`).
+
+### 6. ¿Está el seno subdimensionado y aprieta a las capas superiores?
+**No hay evidencia en el repo que lo sostenga, y sí evidencia que lo contradice.** El 3.96 mL **no** es argumento para esta afirmación en ningún sentido: es un volumen de intersección, no una holgura.
+
+La única evidencia localizable sobre holgura en la cavidad es `09_paper_vascular/diagnostico_holgura_pelvis.md` (Capa **5a**, 2026-07-10; barrido de 525 posiciones de la pelvis). Sus números propios:
+
+- `:16` — `centros probados: 525  ->  VIABLES (pared_ven>=0.4 Y pared_art>=0.4 Y seno<=1): 17`. **El criterio de contención en el seno (`seno<=1`) lo cumplen 17 centros**: el seno **sí** contiene la pelvis. Los valores de contención de los candidatos van de `seno 0.52` a `seno 1.00` (`:17-28`).
+- `:49` — `NINGUN centro D2-viable cierra D3-D5. Fallos entre 15 candidatos: D3(infundibulos) 15/15, D4(ureter) 15/15, D5(corredor) 0/15`.
+- `:56` — `BINDING = el PLEXO VENOSO peri-hilar (32 segs, 27 posteriores) ocupa el corredor Z~0 obligado.`
+- `:57` — `-> el fix NO es posicion NI tamaño de la pelvis: es SEGREGAR/mover el plexo venoso (revisar 3b).`
+- `:64` — veredicto estructurado: `"status": "NO_ES_LA_PELVIS__BINDING_PLEXO_VENOSO_Z0"`, con `"mejor_pared_inf_ureter_um": -964.3`.
+
+**Lectura:** el documento identifica el cuello de botella en el **plexo venoso peri-hilar**, no en las dimensiones del seno, y descarta explícitamente el tamaño como la variable a tocar. Confirma cuantitativamente el blocker de las Entradas 019-021 (árbol venoso ramificado en el hilio).
+
+**Salvedades que impiden cerrar la pregunta con este documento:**
+- Es de **Capa 5a (pelvis)**, no de Capa 4. **Para Capa 4 específicamente: [PENDIENTE DE ANCLA — sin respaldo en repo].**
+- Es del **2026-07-10**, anterior a `fbb6614`. Se apoya en geometría de capas que hoy están desincronizadas (Entrada 032, §Estado). Debe recomputarse tras la cascada antes de tratarse como vigente.
+
+**Redacción autorizada:** *"el seno contiene la pelvis en 17 de 525 posiciones barridas; el binding declarado es el plexo venoso peri-hilar, no el tamaño del seno (diagnostico_holgura_pelvis.md:56-57), pendiente de recomputar tras la cascada."* **Redacción NO autorizada:** cualquier variante de *"el seno está subdimensionado"*, con o sin el 3.96 como apoyo.
+
+### 7. Qué haría falta para anclar el seno
+- Una fuente morfométrica del **seno renal** (volumen, ejes o proporción respecto del parénquima) sobre población adulta sana, medida por MDCT o RM. Glodny 2009 mide *parenchymal width* (PW ≈ 15.5 mm, cápsula → seno) pero **no** dimensiona el seno como cavidad.
+- Hasta entonces, `CENTRO_SENO` y `SEMIEJES_SENO` permanecen en la lista de 10 pendientes de `auditoria_correspondencia_anatomica.md:126-137`, puestos 1 y 2.
+- **Sin esa fuente, el seno no debe aparecer en ninguna tabla de parámetros anclados del preprint.**
+
+### Estado
+**Declarado y acotado, no anclado.** Las dos magnitudes quedan separadas: elipsoide del seno completo **16.22 mL**, volumen excluido por intersección **3.9599 mL** (Monte Carlo, SEED 2026, N 200 000). El repo no contiene hoy ningún etiquetado incorrecto del 3.96; la cadena `3.96 mL` no existe en disco.
+
+**Pendientes que esta entrada abre:**
+1. Persistir `vol_seno_excluido_mm3` en el `.npz` — línea propuesta en §3, **diferida a la cascada**.
+2. Anclar `CENTRO_SENO` y `SEMIEJES_SENO`, o mantenerlos declarados como supuesto en toda publicación.
+3. Recomputar `diagnostico_holgura_pelvis.md` tras la cascada, y sólo entonces pronunciarse sobre la holgura de Capa 4.
+4. **Bloqueante heredado de la Entrada 032:** Capas 1-4 sin regenerar.

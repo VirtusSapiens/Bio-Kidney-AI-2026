@@ -1,3 +1,36 @@
+> # ⛔ DOCUMENTO SUPERADO — NO USAR COMO REFERENCIA DEL ESTADO ACTUAL
+>
+> **Superado por el commit `fbb6614` (2026-08-03)**, que corrigió el campo de profundidad
+> cortical de cuerda radial a distancia perpendicular a la cápsula (método B).
+>
+> **Qué describe este documento:** el grafo de llamadas **anterior** a esa corrección, en el
+> que `compute_depth` obtenía la profundidad de `nearest_surface_distance`, es decir del
+> `np.minimum(dist_capsula, dist_seno)`. **Ese grafo ya no existe.** Hoy `compute_depth`
+> (`capa0_dominio.py:248`) llama a `capsule_distance` (`:221`), que mide la distancia al punto
+> más cercano de la cápsula externa vía `_nearest_point_ellipsoid` (`:140`). La pared del seno
+> no entra en la cadena en ningún punto, y `nearest_surface_distance` (`:111`) **no tiene
+> llamadores** en todo el repositorio.
+>
+> **Los rangos de línea citados aquí están caducos.** Este documento cita `capa0_dominio.py:98-111`
+> para `nearest_surface_distance` y `:114-128` para `compute_depth`; en el archivo actual esos
+> rangos corresponden a otras funciones. Cualquier lectura que siga esas referencias literalmente
+> aterriza en código que no es el que el texto describe.
+>
+> **Referencia vigente del estado actual:**
+> - Código: `capa0_dominio.py:248` (`compute_depth`) → `:221` (`capsule_distance`) → `:140`
+>   (`_nearest_point_ellipsoid`); persistencia en `:437-438`.
+> - Bitácora: **`00_bitacora/BITACORA.md`, ENTRADA 032** (corrección del depth) y **ENTRADA 033**
+>   (estado del seno renal).
+>
+> **Se conserva íntegro y sin modificar por su valor forense:** documenta el razonamiento y las
+> cifras que motivaron la corrección, y es el registro de cómo se detectó el córtex peri-sinusal
+> falso. Es historia del proyecto, no documentación de referencia.
+>
+> **Advertencia operativa registrada en ENTRADA 032:** este documento indujo un misdiagnóstico
+> durante la auditoría del 2026-08-06 (se creyó reabierto un bug ya cerrado). Léelo sabiendo eso.
+
+---
+
 # Diagnóstico de causa raíz — el "matiz del seno" en el campo de profundidad
 
 **Programa:** Bio-Kidney AI 2026 · Fecha: 2026-07-05

@@ -1,3 +1,36 @@
+> # ⛔ DOCUMENTO SUPERADO — NO USAR COMO REFERENCIA DEL ESTADO ACTUAL
+>
+> **Superado por el commit `fbb6614` (2026-08-03)**, que ejecutó precisamente la separación que
+> este documento evaluaba, y además cambió la magnitud del campo: de cuerda radial desde el
+> centroide a distancia perpendicular a la cápsula (método B).
+>
+> **Qué describe este documento:** el grafo de llamadas **anterior** a esa corrección. Su tabla
+> de dependencias marca `nearest_surface_distance` y `compute_depth` como **[DEPENDE-AMBAS]** y
+> afirma que *"único llamador es `compute_depth`"*. **Ambas cosas dejaron de ser ciertas.** Hoy
+> `compute_depth` (`capa0_dominio.py:248`) llama a `capsule_distance` (`:221`), que sólo usa la
+> cápsula externa vía `_nearest_point_ellipsoid` (`:140`), y `nearest_surface_distance` (`:111`)
+> **no tiene llamadores** en todo el repositorio.
+>
+> **Los rangos de línea citados aquí están caducos.** Este documento cita `capa0_dominio.py:98-111`,
+> `:114-128`, `:268` y `:271-272`; en el archivo actual esos rangos corresponden a otras funciones.
+> Cualquier lectura que siga esas referencias literalmente aterriza en código que no es el que el
+> texto describe.
+>
+> **Referencia vigente del estado actual:**
+> - Código: `capa0_dominio.py:248` (`compute_depth`) → `:221` (`capsule_distance`) → `:140`
+>   (`_nearest_point_ellipsoid`); persistencia en `:437-438`.
+> - Bitácora: **`00_bitacora/BITACORA.md`, ENTRADA 032** (corrección del depth) y **ENTRADA 033**
+>   (estado del seno renal).
+>
+> **Se conserva íntegro y sin modificar por su valor forense:** es el análisis de seguridad que
+> autorizó la separación cápsula/seno, y documenta qué consumidores se revisaron antes de tocar
+> el campo. Es historia del proyecto, no documentación de referencia.
+>
+> **Advertencia operativa registrada en ENTRADA 032:** este documento indujo un misdiagnóstico
+> durante la auditoría del 2026-08-06 (se creyó reabierto un bug ya cerrado). Léelo sabiendo eso.
+
+---
+
 # Diagnóstico de seguridad — separar profundidad-cortical del rol del seno renal
 
 **Programa:** Bio-Kidney AI 2026 · Fecha: 2026-07-05
