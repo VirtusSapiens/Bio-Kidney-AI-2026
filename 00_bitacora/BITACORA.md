@@ -1673,6 +1673,43 @@ Se venían usando indistintamente dos números que **no son la misma cosa**:
 - **`grep -rn "3\.96\|3,96"` sobre el repo no devuelve ningún sitio que etiquete 3.96 como "volumen del seno renal".** El único otro acierto, `09_paper_vascular/diagnostico_holgura_pelvis.md:20` (`pared_art 3.96`), es una **holgura de pared arterial en mm**, magnitud distinta y sin relación.
 - **La cadena `3.96 mL` no existe en ningún archivo del repo.** El número nunca se ha escrito en mililitros en disco. Si aparece en material externo (deck, preprint, correspondencia) etiquetado como volumen del seno, ese material está mal y esta entrada es la referencia para corregirlo.
 
+### 2-bis. COTA INFERIOR DE VOLUMEN VIOLADA (añadido 2026-08-11, tras el anclaje de Caglar 2014)
+
+Cuando se redactó esta entrada no existía referencia de volumen del seno y §7 lo declaraba pendiente. **Ya existe una cota, y el gemelo la viola.**
+
+**El argumento es de contención, no de ajuste.** El seno renal contiene grasa **más** el sistema colector (pelvis, cálices), la arteria y vena renales y sus ramas, linfáticos y tejido conectivo. Por tanto, para un mismo riñón:
+
+> **V_seno > V_grasa_sinusal**, siempre y por definición.
+
+Caglar 2014 mide **sólo la grasa** del seno por estereología sobre TC (n = 240, 21–80 años). Sus medias por grupo:
+
+| grupo | grasa sinusal (cm³) |
+|---|---|
+| hombres, riñón izquierdo | **5.70 ± 2.87** |
+| hombres, riñón derecho | 4.15 ± 2.39 |
+| mujeres, riñón izquierdo | 3.51 ± 2.67 |
+| mujeres, riñón derecho | 2.49 ± 2.16 |
+
+**Aritmética de la violación.** El volumen **excavado** del gemelo (la intersección seno ∩ parénquima, que es el hueco real que el modelo abre) es **3.9599 mL**:
+
+| comparación | cociente seno/grasa | ¿cumple V_seno > V_grasa? |
+|---|---|---|
+| 3.9599 vs 5.70 (H izq) | **0.700** | **NO — violada por 1.740 mL** |
+| 3.9599 vs 4.15 (H der) | **0.962** | **NO — violada por 0.190 mL** |
+| 3.9599 vs 3.51 (M izq) | 1.128 | sí, con margen de sólo 0.450 mL |
+| 3.9599 vs 2.49 (M der) | 1.590 | sí |
+
+**Lectura:** el hueco que el gemelo excava es *más pequeño que la grasa sola* de un riñón izquierdo masculino medio, y apenas mayor que la grasa sola de un riñón derecho masculino medio. Como en ese hueco debe caber además todo el sistema colector y el pedículo vascular — que es exactamente lo que Capas 3b/4/5a intentan meter ahí —, **la cota inferior está violada en los dos grupos masculinos**.
+
+- El gemelo **no declara lateralidad ni sexo**: **[PENDIENTE DE ANCLA]** cuál de los cuatro grupos le corresponde. Por eso la cota se reporta contra los cuatro.
+- La magnitud comparable es el **volumen excavado (3.9599 mL)**, no el elipsoide completo (16.22 mL). El elipsoide no es un volumen anatómico: el 76 % de él cae fuera del parénquima y no excava nada.
+- Reproducible:
+  ```bash
+  .venv/bin/python -c "import numpy as np; d=np.load('capa0_dominio.npz'); v=(float(d['vol_elipsoide_mm3'])-float(d['vol_parenquima_mm3']))/1000; print('excavado %.4f mL'%v); [print('  vs %-6s %.2f -> %.3f %s'%(k,g,v/g,'VIOLA' if v<g else 'ok')) for k,g in [('H izq',5.70),('H der',4.15),('M izq',3.51),('M der',2.49)]]"
+  ```
+
+**Esto invierte el diagnóstico de §6.** Ver la revisión de esa sección más abajo.
+
 ### 3. Fragilidad: el número no se persiste
 - `vol_seno_excluido` se calcula en `capa0_dominio.py:430` y **nunca se guarda**. El bloque `np.savez_compressed` (`:433-457`) persiste `vol_parenquima_mm3` (`:451`) y `vol_elipsoide_mm3` (`:452`), pero no el volumen excluido. Las claves de volumen del `.npz` son exactamente `['vol_parenquima_mm3', 'vol_elipsoide_mm3']`.
 - El valor sólo existe como salida de consola, `capa0_dominio.py:470-471`:
@@ -1723,10 +1760,42 @@ La única evidencia localizable sobre holgura en la cavidad es `09_paper_vascula
 
 **Redacción autorizada:** *"el seno contiene la pelvis en 17 de 525 posiciones barridas; el binding declarado es el plexo venoso peri-hilar, no el tamaño del seno (diagnostico_holgura_pelvis.md:56-57), pendiente de recomputar tras la cascada."* **Redacción NO autorizada:** cualquier variante de *"el seno está subdimensionado"*, con o sin el 3.96 como apoyo.
 
+> **REVISIÓN 2026-08-11 — la prohibición de arriba queda LEVANTADA.** El párrafo anterior se conserva sin modificar como registro de lo que se sabía el 2026-08-06. Su razonamiento era correcto **con la evidencia disponible entonces**: el 3.96 mL no era argumento porque no había con qué compararlo, y `diagnostico_holgura_pelvis.md` sólo hablaba de la *pelvis*, no del *volumen*.
+>
+> **Caglar 2014 aporta la cota que faltaba** (§2-bis). La afirmación pasa a estar sostenida, pero **por una vía distinta de la que se había intentado**: no por holgura de Capa 5a, sino por violación de la cota inferior de volumen.
+>
+> **REDACCIÓN AHORA AUTORIZADA** (usar literalmente, o una paráfrasis que conserve las tres precisiones marcadas):
+>
+> > *"El volumen **excavado** por el seno del gemelo — **3.9599 mL**, la intersección del elipsoide de exclusión con el parénquima, **no** el elipsoide completo de 16.22 mL — es **menor que el volumen de grasa sinusal sola** reportado por Caglar et al. (Folia Morphol. 2014;73(3):302-308) para riñón izquierdo masculino (**5.70 ± 2.87 cm³**) y riñón derecho masculino (**4.15 ± 2.39 cm³**), medido por estereología sobre TC en n = 240 sujetos. Como el seno renal contiene, además de grasa, el sistema colector, el pedículo vascular, linfáticos y tejido conectivo, se cumple necesariamente V_seno > V_grasa. **El seno del gemelo está por tanto subdimensionado** frente a esa cota inferior en los dos grupos masculinos."*
+>
+> **Tres precisiones que la redacción debe conservar siempre:**
+> 1. **El número es el excavado (3.9599 mL), nunca el elipsoide (16.22 mL).** El elipsoide no es un volumen anatómico.
+> 2. **Caglar mide grasa, no seno.** La comparación es contra una **cota inferior**, no contra un valor de referencia del seno. Nunca escribir "el seno debería medir 5.70 mL".
+> 3. **La cota se viola en los grupos masculinos** (izq y der); frente a los femeninos el gemelo queda por encima, con margen estrecho. Si no se declara lateralidad ni sexo, decir "en los dos grupos masculinos", no "siempre".
+>
+> **Sigue NO AUTORIZADO:** (a) presentar 16.22 mL como volumen del seno; (b) afirmar que el seno "aprieta a Capa 4" o a Capa 5a — eso sigue siendo `[PENDIENTE DE ANCLA]`, y `diagnostico_holgura_pelvis.md:56-57` sigue señalando el plexo venoso como binding; (c) derivar un tamaño de seno cruzando Caglar con Zhang 2023 (ver §7).
+
 ### 7. Qué haría falta para anclar el seno
 - Una fuente morfométrica del **seno renal** (volumen, ejes o proporción respecto del parénquima) sobre población adulta sana, medida por MDCT o RM. Glodny 2009 mide *parenchymal width* (PW ≈ 15.5 mm, cápsula → seno) pero **no** dimensiona el seno como cavidad.
 - Hasta entonces, `CENTRO_SENO` y `SEMIEJES_SENO` permanecen en la lista de 10 pendientes de `auditoria_correspondencia_anatomica.md:126-137`, puestos 1 y 2.
 - **Sin esa fuente, el seno no debe aparecer en ninguna tabla de parámetros anclados del preprint.**
+
+> **ACTUALIZACIÓN 2026-08-11 — dos anclas PARCIALES incorporadas.** Registro completo en `04_literatura/anclas_seno_renal.md`.
+>
+> **[ANCLA PARCIAL 1] Caglar V, Kucuk A, Aktas S, et al.** *"Volumetric evaluation of fat in the renal sinus in normal subjects using stereological method on computed tomography images and its relationship with body composition."* **Folia Morphologica. 2014;73(3):302-308.** DOI **10.5603/FM.2014.0016**. PMID **25242158**.
+> n = 240 sujetos, 21–80 años, TC, método estereológico. **Grasa del seno renal:** hombres izq **5.70 ± 2.87** / der **4.15 ± 2.39** cm³; mujeres izq **3.51 ± 2.67** / der **2.49 ± 2.16** cm³.
+> **Qué ancla:** una **cota inferior** de volumen del seno (§2-bis). **Qué NO ancla:** el volumen del seno, sus ejes ni su posición. Mide grasa, que es un subconjunto propio del contenido sinusal.
+>
+> **[ANCLA PARCIAL 2] Zhang QH, et al.** *Frontiers in Endocrinology.* **2023;14:1187781.** DOI **10.3389/fendo.2023.1187781**.
+> n = 126, RM, mapeo de fracción grasa. **Fracción grasa del seno:** hombres **28.33 ± 6.73** (der) / **31.21 ± 6.29** (izq); mujeres **23.82 ± 7.74** / **27.92 ± 8.15**.
+> **Qué ancla:** la **proporción** de grasa dentro del seno. **Qué NO ancla:** ningún volumen absoluto.
+>
+> **[NO ANCLADO — HIPÓTESIS CONVERGENTE, PROHIBIDO USAR COMO PARÁMETRO]** Cruzar la fracción de Zhang con el volumen de Caglar sugeriría un seno total de orden ~14–15 cm³, cercano al elipsoide de exclusión de 16.22 mL, lo que apuntaría a que **el tamaño del elipsoide es aproximadamente correcto y el error está en `CENTRO_SENO`** — coherente con el diagnóstico independiente de `08_gemelo_digital/_auditoria/2026-08-09` y `2026-08-10`, donde `CENTRO_SENO[1]` resulta ser la variable dominante y `SEMIEJES_SENO` no puede corregir el defecto de los ápices.
+> **Por qué NO puede usarse como valor:** los volúmenes absolutos de ambos estudios difieren en casi un orden de magnitud por metodologías distintas (estereología sobre TC vs mapeo de fracción grasa por RM, poblaciones y criterios de segmentación distintos). **Un número derivado cruzando dos estudios no comparables no es un anclaje.** Se registra como convergencia cualitativa entre dos vías independientes, jamás como parámetro.
+>
+> **SIGUE PENDIENTE:** las dimensiones del área ecogénica central de **Emamian 1993** no aparecen en ninguna fuente secundaria accesible. **[PENDIENTE DE ANCLA]** para `SEMIEJES_SENO` y `CENTRO_SENO` como valores. Lo que Caglar y Zhang permiten hoy es **acotar y falsar**, no fijar.
+>
+> **Aviso de integridad (2026-08-11):** circuló un documento externo con dimensiones *reconstruidas* de la CEA de Emamian presentadas como datos del paper (L = 4.5, W = 1.3, T = 1.2 cm; V = 3.68 cm³). **Esas cifras no están en la fuente y no deben usarse.** Búsqueda en el repo: **no aparecen** (los únicos aciertos de `3.68` son coordenadas del árbol vascular en `02_vascular_cco/renal_data_v1.json`).
 
 ### Estado
 **Declarado y acotado, no anclado.** Las dos magnitudes quedan separadas: elipsoide del seno completo **16.22 mL**, volumen excluido por intersección **3.9599 mL** (Monte Carlo, SEED 2026, N 200 000). El repo no contiene hoy ningún etiquetado incorrecto del 3.96; la cadena `3.96 mL` no existe en disco.
@@ -1736,3 +1805,47 @@ La única evidencia localizable sobre holgura en la cavidad es `09_paper_vascula
 2. Anclar `CENTRO_SENO` y `SEMIEJES_SENO`, o mantenerlos declarados como supuesto en toda publicación.
 3. Recomputar `diagnostico_holgura_pelvis.md` tras la cascada, y sólo entonces pronunciarse sobre la holgura de Capa 4.
 4. **Bloqueante heredado de la Entrada 032:** Capas 1-4 sin regenerar.
+
+> **ADENDA 2026-08-11 — el estado epistémico cambia de NO ANCLADO a ACOTADO.**
+> El encabezado de esta entrada (`DECLARADO, NO ANCLADO`) se conserva sin modificar: era exacto el 2026-08-06. Hoy la situación es distinta y esta adenda la fija.
+>
+> - **Lo que cambia:** existe una **cota inferior anclada** (Caglar 2014) y el gemelo la **viola** en los dos grupos masculinos (§2-bis). La redacción *"el seno está subdimensionado"* pasa de prohibida a autorizada, con las tres precisiones de §6.
+> - **Lo que NO cambia:** `SEMIEJES_SENO` y `CENTRO_SENO` **siguen sin ancla de valor** y siguen en los puestos 1 y 2 de los 10 pendientes. Caglar y Zhang permiten **falsar**, no **fijar**. El seno **sigue sin poder aparecer** en una tabla de parámetros anclados del preprint.
+> - **Estado resultante:** **SUPUESTO DECLARADO, ACOTADO POR ABAJO Y FALSADO.** Un supuesto que ahora se sabe incorrecto en una dirección conocida — que es más que "no anclado" y menos que "anclado".
+>
+> **Pendiente nuevo que esta adenda abre:**
+> 5. La corrección de `CENTRO_SENO` deja de ser opcional: hoy corrige **cuatro** defectos independientes — ápices corticales, PW frente a Glodny, espesor medular, y ahora la cota de volumen de Caglar. Intervalo admisible bajo las tres condiciones ancladas: **`CENTRO_SENO[1] ∈ [−31.37, −27.80]`** (0 ápices corticales · PW dentro de ±1 s.d. de Glodny · volumen excavado > 5.70 mL). Diagnóstico y barridos en `08_gemelo_digital/_auditoria/2026-08-09_seno_apices_particion.md` y `_auditoria/2026-08-10_centro_seno_particion.md`; fuentes en `04_literatura/anclas_seno_renal.md`.
+
+> **REVISIÓN 2026-08-12 — el pendiente 5, tal como está redactado arriba, contiene DOS ERRORES METODOLÓGICOS.** El texto anterior se conserva sin modificar como registro de lo que se afirmó el 2026-08-11. Auditoría completa en `08_gemelo_digital/_auditoria/2026-08-12_reservas_pw_region2d.md`.
+>
+> **Error 1 — «cuatro defectos independientes» es incorrecto.**
+> Las tres condiciones geométricas son **estrictamente monótonas crecientes** en `CENTRO_SENO[1]`. Barrido con aserto de monotonía en 13 pasos (`sy = 16`):
+>
+> | `cy` | `depth` mín de ápice | PW_max | V excavado (mL) |
+> |---|---|---|---|
+> | −34.0 | 5.295 | 12.00 | 3.994 |
+> | −32.0 | 6.757 | 14.00 | 5.275 |
+> | −30.0 | 8.058 | 16.00 | 6.635 |
+> | −28.0 | 9.190 | 18.00 | 8.128 |
+>
+> Y la monotonía es **estructural, no numérica**: las tres miden, con métricas distintas, **cuánto se adentra el seno en el parénquima**. Por tanto **no podían discrepar en dirección**, y su acuerdo **no es corroboración mutua**. La formulación correcta es: *cuatro síntomas del mismo defecto que coinciden en la **DIRECCIÓN**, no cuatro anclas independientes que convergen en un **VALOR**.* Lo que sí aportan por separado son **umbrales distintos**, y con ellos los dos bordes de la región.
+>
+> **Error 2 — el intervalo `[−31.37, −27.80]` está mal planteado y queda RETIRADO.**
+> Se cumple la identidad `PW_max = |−B_SEMI − (cy + sy)|` (contrastada contra malla en 5 configuraciones, diferencia ≤ 1.8 × 10⁻⁴ mm). Luego **PW depende únicamente de la SUMA `cy + sy`**, no de `cy` por separado. El intervalo publicado es un **corte en `sy = 16`**, y `sy` está tan sin anclar como `cy` (puestos 1 y 2 de los 10 pendientes). Además `sx` y `sz` tampoco están anclados: **el espacio real es 4D en `(cy, sy, sx, sz)`**.
+>
+> **Formulación correcta de lo que las anclas restringen hoy:**
+> - **Glodny (PW ±1 s.d.):** restringe la **suma**, `cy + sy ∈ [−17.4, −11.8]`. Es una banda diagonal del plano `(cy, sy)`, no un intervalo en `cy`.
+> - **Caglar (volumen excavado > 5.70 mL):** una región curva en `(cy, sy, sx, sz)`; cota inferior.
+> - **Región admisible bajo ambas**, con `sx = 22` y `sz = 11` fijos *(rebanada 2D de un espacio 4D)*: banda diagonal de anchura 1.8–4.4 mm en `cy` según `sy` — p. ej. `sy = 12` → `cy ∈ [−28.50, −24.10]`; `sy = 16` → `cy ∈ [−31.30, −27.90]`; `sy = 22` → `cy ∈ [−35.70, −33.90]`. Tabla completa en `_auditoria/2026-08-12`, Reserva 2c.
+>
+> **Error 3 (derivado) — los 4 ápices corticales NO son vinculantes.**
+> Con `sy = 16`, los umbrales son: ápices `cy ≥ −32.50`; PW ≥ 12.6 `cy ≥ −33.40`; **volumen > 5.70 `cy ≥ −31.30`**; **PW ≤ 18.2 `cy ≤ −27.80`**. Es decir: **Caglar fija el borde inferior, Glodny el superior, y la condición de ápices es REDUNDANTE en ambos bordes** — no fija nada, se satisface automáticamente en cuanto se cumple Caglar. **Siguen siendo un defecto real** (4 papilas en territorio córtex, `depth` 5.295 y 6.428 mm frente al umbral 6.6), y su diagnóstico sigue en pie; **pero no son un pilar del intervalo** y presentarlos como uno de los cuatro criterios de calibración era inexacto.
+>
+> **Premisa incorrecta sobre el protocolo de Glodny.**
+> Se había asumido que Glodny 2009 mide *"una medida por riñón en localización estandarizada"*. **La fuente no lo dice.** Consultado el texto completo (BMC Urology 2009;9:19, PMC2813848): especifica `width of the parenchyma (PW) and the cortex (CW) in the arterial phase` y el pie de la Figura 1 lo sitúa en **corte axial**; el `measurements were performed twice in a random sample of 50 data sets` es control de reproducibilidad, **no** el protocolo de rutina. Quedan **[PENDIENTE DE ANCLA]**: (i) el **nivel anatómico** al que se mide el PW (polo superior / tercio medio / hilio / polo inferior), (ii) el **número de medidas por riñón**, (iii) si es **localización estandarizada o promedio**.
+>
+> **Consecuencia:** no se sabe qué estadístico del gemelo es comparable con el de Glodny. La **dirección** del hallazgo es robusta —máximo 12.000, p95 11.528, mediana 6.855 y media 6.590 caen **todos** por debajo de 12.6 mm—, pero la **magnitud** del déficit no lo es (3.4 mm con el máximo, 8.5 mm con la mediana), y la magnitud es justo lo que fijaría el borde superior de la región.
+>
+> **Qué queda FIRME tras esta revisión:** la **cota inferior de volumen violada** (§2-bis) — no depende de PW, ni del estadístico elegido, ni de `sy`: compara dos volúmenes bajo el mismo criterio de contención. Y que **`CENTRO_SENO` es la variable dominante** (barrido de `_auditoria/2026-08-10` §1c, independiente de estas reservas).
+>
+> **Qué NO debe commitearse ni publicarse:** ninguna cifra de intervalo para `CENTRO_SENO[1]`, en ninguna forma, hasta (i) determinar el estadístico de PW de Glodny y (ii) reformular la región sobre `(cy, sy)` o sobre la suma `cy + sy`.
