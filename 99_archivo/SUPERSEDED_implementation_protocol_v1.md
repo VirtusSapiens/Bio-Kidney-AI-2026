@@ -1,3 +1,10 @@
+> ⚠️ **DOCUMENTO SUPERADO — NO USAR COMO FUENTE**
+> Superado por: MAESTRO_contexto_canonico_BioKidney_v2.md (22 ago 2026) y
+> preprint_biokidney_2026_EN_v4.md.
+> Contiene cifras y encuadres retirados. Se conserva solo por trazabilidad
+> histórica. Marcado el 22 de agosto de 2026.
+> **Motivo específico:** Ocho instancias de TFG 115,2 con lenguaje predictivo prohibido ("the simulation predicts", "Predicted GFR"). La cifra canónica es ~115 mL/min como feasibility check.
+
 # Bio-Kidney AI 2026: Implementation Protocol
 ## From Computational Validation to Fabrication-Ready Specification
 

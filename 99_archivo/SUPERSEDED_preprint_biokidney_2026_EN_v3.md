@@ -1,3 +1,10 @@
+> ⚠️ **DOCUMENTO SUPERADO — NO USAR COMO FUENTE**
+> Superado por: MAESTRO_contexto_canonico_BioKidney_v2.md (22 ago 2026) y
+> preprint_biokidney_2026_EN_v4.md.
+> Contiene cifras y encuadres retirados. Se conserva solo por trazabilidad
+> histórica. Marcado el 22 de agosto de 2026.
+> **Motivo específico:** Superado por v4. Aún reporta el módulo de oxígeno como solver activo y TFG con decimal.
+
 <style>
   body {
     text-align: justify;

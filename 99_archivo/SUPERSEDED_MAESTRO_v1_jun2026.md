@@ -1,3 +1,10 @@
+> ⚠️ **DOCUMENTO SUPERADO — NO USAR COMO FUENTE**
+> Superado por: MAESTRO_contexto_canonico_BioKidney_v2.md (22 ago 2026) y
+> preprint_biokidney_2026_EN_v4.md.
+> Contiene cifras y encuadres retirados. Se conserva solo por trazabilidad
+> histórica. Marcado el 22 de agosto de 2026.
+> **Motivo específico:** MAESTRO v1. Declara Capa 3 sin empezar, título retirado, TFG 115,4 y "pipeline integrado predictivo".
+
 **BIO-KIDNEY AI 2026 — DOCUMENTO MAESTRO DE CONTEXTO (CANÓNICO)**  
 **Fuente única de verdad para GENESIS y los tres agentes Nexus.**  
    

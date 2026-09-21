@@ -1849,3 +1849,26 @@ La única evidencia localizable sobre holgura en la cavidad es `09_paper_vascula
 > **Qué queda FIRME tras esta revisión:** la **cota inferior de volumen violada** (§2-bis) — no depende de PW, ni del estadístico elegido, ni de `sy`: compara dos volúmenes bajo el mismo criterio de contención. Y que **`CENTRO_SENO` es la variable dominante** (barrido de `_auditoria/2026-08-10` §1c, independiente de estas reservas).
 >
 > **Qué NO debe commitearse ni publicarse:** ninguna cifra de intervalo para `CENTRO_SENO[1]`, en ninguna forma, hasta (i) determinar el estadístico de PW de Glodny y (ii) reformular la región sobre `(cy, sy)` o sobre la suma `cy + sy`.
+
+## ENTRADA — 2026-08-22 · Higiene documental y MAESTRO v2
+
+Se detectó deriva entre los documentos canónicos y el estado real del proyecto
+(preprint v4, Capas 0–4 cerradas). Acciones:
+
+- Creado MAESTRO_contexto_canonico_BioKidney_v2.md como fuente única.
+  Verificado contra preprint_biokidney_2026_EN_v4.md y BITÁCORA desde terminal.
+- Fijada la TFG canónica en ~115 mL/min sin decimal (115,2 y 115,4 superadas;
+  el v4 eliminó el decimal por tratarse de un chequeo aritmético manual).
+- Registrado como sobreclaim el término "pipeline integrado predictivo": el
+  módulo de filtración corre sobre el árbol CCO v7 legacy y no consume el
+  campo de presión v8 (v4 §2.4, §3.3).
+- Archivados con cabecera SUPERSEDED: implementation_protocol_v1.md,
+  BITACORA_sesion_resometimiento_biorxiv.md, preprint_EN_v3.md,
+  MAESTRO v1, informe de desarrollo del dashboard (mar 2026).
+- INDICE_BioKidneyAI.md marcado como superado, pendiente de regeneración.
+- Parcheadas las instrucciones de los cuatro agentes de marca.
+
+Hallazgo relevante: el informe del dashboard describía el estado previo a la
+corrección de dashboard_maestro_app.py (entrada 1458). El código fue alineado
+al v4; su documentación no. Verificar en futuras correcciones que la
+documentación de un artefacto se corrija junto con el artefacto.
