@@ -51,7 +51,7 @@ find . -maxdepth 3 -name "*.py" -not -path '*/.*' -printf '%T@ %p\n' | sort -nr 
 
 echo ""
 echo -e "${CYAN}-- COMANDOS RÁPIDOS --${NC}"
-echo -e " ${GREEN}Dashboard   :${NC} python3 06_app/dashboard_maestro_app.py"
+# dashboard_maestro_app.py archivado 2026-09-21, ver MAESTRO_v2 §5
 echo -e " ${GREEN}Filtración  :${NC} python3 06_app/filtracion_glomerular_gui.py"
 echo -e " ${GREEN}Analizador  :${NC} python3 analizador_proyecto_biokidney.py"
 echo -e " ${GREEN}Arquitecto  :${NC} python3 biokidney_architect.py"
