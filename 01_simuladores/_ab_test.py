@@ -10,9 +10,9 @@ import sys, importlib.util
 from pathlib import Path
 import numpy as np
 
-ROOT = Path.home() / 'Escritorio/BioKidney-AI'
+ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / '01_simuladores'))
-spec = importlib.util.spec_from_file_location('o2mod', str(ROOT / '01_simuladores/simulador_oxigeno_biokidney.py'))
+spec = importlib.util.spec_from_file_location('o2mod', str(ROOT / '99_archivo/SUPERSEDED_simulador_oxigeno_biokidney.py'))
 o2 = importlib.util.module_from_spec(spec); spec.loader.exec_module(o2)
 from biokidney.experts.cellular import CellularExpert as CE
 cfgp = o2.cfg_physio
