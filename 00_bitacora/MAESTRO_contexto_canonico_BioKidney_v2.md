@@ -206,22 +206,41 @@ mayo, que marca ese archivo como "no exportado", está obsoleto en ese punto.
 hace en Claude Code, **no** dentro de los agentes de marca. GENESIS explica esta
 ciencia; no la desarrolla.
 
-### ⚠️ Archivos contaminados en `00_bitacora/` (acción pendiente)
+### ✅ Higiene documental de `00_bitacora/` (cerrada 2026-09-21)
 
-Dos archivos viven en la misma carpeta que GENESIS tiene como conocimiento y
-contienen cifras retiradas **con encuadre predictivo prohibido**:
+Los dos archivos que esta sección marcaba como la contaminación más seria
+del repo ya no están en rutas activas:
 
-- **`implementation_protocol_v1.md`** — ocho instancias de 115,2 con lenguaje
-  como *"the simulation predicts"*, *"Predicted GFR"*, *"GFR prediction"*. **No
-  aparece** en la lista de archivos alineados al v4 (BITÁCORA 1458). Es la
-  contaminación más seria del repo: un agente puede leer de ahí y devolver
-  número viejo *y* marco epistémico equivocado.
-- **`BITACORA_sesion_resometimiento_biorxiv.md`** — título retirado y
-  "115,2 — Dentro del rango normal" sin encuadre de feasibility check.
+- `implementation_protocol_v1.md` → `99_archivo/SUPERSEDED_implementation_protocol_v1.md`
+  (commit 51a3944).
+- `BITACORA_sesion_resometimiento_biorxiv.md` → `99_archivo/SUPERSEDED_BITACORA_sesion_resometimiento_biorxiv.md`
+  (fuera de rutas activas; no se commitea porque nunca estuvo en git).
 
-**Acción:** cabecera `SUPERSEDED` en ambos o mudarlos a `99_archivo/`, donde ya
-están correctamente marcados los preprints ES/EN superados. Mientras no se
-haga, GENESIS opera con dos fuentes que se contradicen.
+La limpieza se extendió al resto del repo: PDFs de preprints superados,
+informes y capturas de simuladores, materiales de presentación, dashboard
+maestro y simuladores de reabsorción y de O₂ (commits 508e97c, 8dc4190 y
+4eb7029). Detalle en BITÁCORA, entrada del 2026-09-21.
+
+**Verificar fuera del repo:** si el conocimiento de GENESIS es una copia
+subida aparte y no una lectura directa de `00_bitacora/`, estos archivos
+deben retirarse también de esa copia. Archivar en el repo no los borra de
+ahí.
+
+### Frentes abiertos tras la higiene documental
+
+- **v5 del depósito en Zenodo:** Figura 3 (la imagen no corresponde a su
+  caption y tiene encuadre de mejora), Figura 2 (el mínimo de presión
+  coincide con el umbral), título retirado en el registro Zenodo y en
+  `ORCID/works.bib`, y decisión sobre `supplementary_material_v8.md`.
+- **`web_app/`:** sigue calculando métricas de O₂, de flujo urinario y el
+  porcentaje de TFG nativa.
+- **Simuladores de filtración glomerular**
+  (`simulador_filtracion_glomerular{,_G}.py`): comparaciones con el riñón
+  nativo en código activo; el v4 cita el módulo standalone (§2.4).
+- **Módulos iPSC y dECM:** veredictos que contradicen sus propios datos.
+- **`INDICE_BioKidneyAI.md`:** superado, pendiente de regeneración.
+- **Fuera del repo:** ubicar `biokidney_fixed.jpg` (exportación del
+  dashboard maestro) y verificar si se publicó.
 
 ---
 

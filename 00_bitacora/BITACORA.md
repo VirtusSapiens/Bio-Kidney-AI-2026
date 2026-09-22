@@ -3,6 +3,13 @@
 **Inicio del proyecto:** Enero 2026
 **Objetivo:** Desarrollar el modelo computacional completo de un riñón bioimpreso funcional, desde la síntesis vascular hasta la validación hemodinámica, como base científica para el primer riñón artificial bioimpreso viable.
 
+> **Nota de lectura (2026-09-21).** Esta bitácora es un registro cronológico
+> y no se reescribe. El objetivo de arriba es el original de enero de 2026.
+> El alcance vigente del proyecto y la lista de afirmaciones retiradas están
+> en `MAESTRO_contexto_canonico_BioKidney_v2.md` (§0). Las entradas
+> anteriores al 2026-08-22 pueden contener cifras y encuadres retirados; las
+> líneas con TFG decimal identificadas en la auditoría del 2026-09-21 llevan
+> el marcador [RETIRADO: ver MAESTRO §0].
 ---
 
 ## ENTRADA 001 — Enero 2026
@@ -534,7 +541,7 @@ Bio-Kidney AI 2026 — Validación In Silico Completa
 ## Entrada: 29-30 Marzo 2026 — CCO v8 y Preprint v2
 ### Hitos técnicos
 - **CCO v8 implementado:** 1,902 segmentos vasculares, 915 bifurcaciones, 100% Murray
-- **TFG mejorada:** 115.2 mL/min (rango normal adulto sano, +40% vs v7)
+- **TFG mejorada:** 115.2 mL/min (rango normal adulto sano, +40% vs v7) [RETIRADO: ver MAESTRO §0]
 - **Modelo Poiseuille calibrado:** Dos pasos, presiones terminales 58.6 +/- 13.4 mmHg
 - **Distribución Beta(3,1.2):** 63% demanda glomerular hacia cortex
 - **Blender v8:** Modelo 3D renderizado (sab_4_abril_1200_am_v8_1.blend)
@@ -560,7 +567,7 @@ Bio-Kidney AI 2026 — Validación In Silico Completa
   Preprint abierto, indexado en OpenAIRE
 - **LinkedIn actualizado:** Publicación con DOI de Zenodo
 - **Correo Dr. Hincapié programado:** Lunes 14 abril 7:00 AM
-  Asunto: Propuesta de colaboracion tecnica e institucional: Framework Bio-Kidney AI 2026 (TFG 115.2 mL/min)
+  Asunto: Propuesta de colaboracion tecnica e institucional: Framework Bio-Kidney AI 2026 (TFG 115.2 mL/min) [RETIRADO: ver MAESTRO §0]
 - **Rama fractal creada:** feature/cco-v8-fractal
 - **Git push exitoso:** Todos los archivos v8 en GitHub
 ### Segunda fase definida
@@ -589,7 +596,7 @@ Bio-Kidney AI 2026 — Validación In Silico Completa
 ## Entrada: 29-30 Marzo 2026 — CCO v8 y Preprint v2
 ### Hitos tecnicos
 - CCO v8 implementado: 1,902 segmentos vasculares, 915 bifurcaciones, 100% Murray
-- TFG mejorada: 115.2 mL/min (rango normal adulto sano, +40% vs v7)
+- TFG mejorada: 115.2 mL/min (rango normal adulto sano, +40% vs v7) [RETIRADO: ver MAESTRO §0]
 - Modelo Poiseuille calibrado de dos pasos: presiones terminales 58.6 +/- 13.4 mmHg
 - Distribucion Beta(3,1.2): 63% demanda glomerular hacia cortex
 - Blender v8: Modelo 3D renderizado (sab_4_abril_1200_am_v8_1.blend)
@@ -617,7 +624,7 @@ Bio-Kidney AI 2026 — Validación In Silico Completa
   Preprint abierto, indexado en OpenAIRE
 - LinkedIn actualizado: Publicacion con DOI de Zenodo
 - Correo Dr. Hincapie programado: Lunes 14 abril 7:00 AM
-  Asunto: Propuesta de colaboracion tecnica e institucional: Framework Bio-Kidney AI 2026 (TFG 115.2 mL/min)
+  Asunto: Propuesta de colaboracion tecnica e institucional: Framework Bio-Kidney AI 2026 (TFG 115.2 mL/min) [RETIRADO: ver MAESTRO §0]
 - Rama fractal creada: feature/cco-v8-fractal
 - Git push exitoso: Todos los archivos v8 en GitHub
 - Bitacora actualizada con entradas 27 marzo al 11 abril
@@ -768,7 +775,7 @@ Ninguna cifra de las entradas previas se modifica ni se corrige en su sitio: la 
 ### Tabla de evolución de cifras
 | Parámetro | Valor histórico → Valor vigente | Razón del cambio |
 |---|---|---|
-| **TFG bilateral** | 82 mL/min (presión sintética, no derivada de geometría real) → **115,2 mL/min** (v8, modelo de Poiseuille calibrado en dos pasadas, dentro del rango normal 100–125) | El 82 no provenía de la geometría vascular real. |
+| **TFG bilateral** | 82 mL/min (presión sintética, no derivada de geometría real) → **115,2 mL/min** (v8, modelo de Poiseuille calibrado en dos pasadas, dentro del rango normal 100–125) | El 82 no provenía de la geometría vascular real. | [RETIRADO: ver MAESTRO §0]
 | **Referencia "nativo"** | "62,5 mL/min" como comparación → se **elimina** el encuadre de "superar al nativo" | Comparación engañosa; el marco correcto es "dentro del rango fisiológico normal". |
 | **WSS (wall shear stress)** | 24,69–37,04 dyn/cm² (banda 10–70) → **5,6 dyn/cm²** (banda renal real 1–10) | La banda 10–70 era fisiológicamente incorrecta para arteriolas renales; ya corregido en marzo. |
 | **Vascular** | CCO v7 / 1.448 segmentos → **CCO v8 / 1.902 segmentos** (pipeline publicado), con reconstrucción en curso por capas (Capa 3, space colonization + Murray) | Mejora de densidad cortical y presión; v7 es histórico. |
@@ -1872,3 +1879,55 @@ Hallazgo relevante: el informe del dashboard describía el estado previo a la
 corrección de dashboard_maestro_app.py (entrada 1458). El código fue alineado
 al v4; su documentación no. Verificar en futuras correcciones que la
 documentación de un artefacto se corrija junto con el artefacto.
+
+## ENTRADA — 2026-09-21 · Cierre de higiene documental (frente A)
+
+Continuación de la entrada del 22 ago 2026. Criterio: ningún archivo activo
+contiene cifras retiradas (MAESTRO §0) ni encuadre predictivo; ante
+ambigüedad, se archiva.
+
+Commits:
+- 51a3944: MAESTRO v2 y archivado del 22 ago (trabajo de esa fecha,
+  commiteado hoy).
+- 508e97c: archiva preprint EN v1 (PDF), 01_simuladores/Informes/,
+  01_simuladores/screenshots/, 07_presentacion_final/ y dos imágenes de
+  preprints superados (a 99_archivo/images/).
+- 8dc4190: archiva dashboard_maestro_app.py, simulador_reabsorcion_tubular.py
+  y run_pipeline.sh; inicio.sh L54 pasa a comentario.
+- 4eb7029: archiva simulador_oxigeno_biokidney.py; _ab_test.py con ROOT
+  relativo, apuntando al archivo.
+
+Movidos a 99_archivo/ sin commitear: material que nunca estuvo en git
+(preprints PDF superados, documentos de contexto, un manuscrito de abril,
+un deck de presentación externa, diffs de auditoría). No se publica
+material contaminado que nunca fue público.
+
+Verificado desde terminal:
+- Las 7 rutas del repo citadas por preprint_biokidney_2026_EN_v4.md siguen
+  intactas.
+- _ab_test.py ejecutado con .venv: con omega=1.6 diverge a NaN (it=1524);
+  con omega=1.0 no converge en 8000 iteraciones. El md5 de
+  senyal_hipoxia_para_cco.csv no cambia tras la ejecución.
+
+Hallazgos (pendientes, fuera del alcance de esta sesión):
+- Figura 3 del v4 (image_f02d63.png): la imagen no corresponde a su caption
+  (sin paneles A/B, sin líneas de 90 y 60 mL/min, sin inset), y su título y
+  la etiqueta "Calibrated" contradicen el encuadre de feasibility check. Se
+  queda en su ruta por ser la versión depositada; se corrige en una v5.
+- Figura 2 del v4: el mínimo de presión terminal coincide con el umbral de
+  43 mmHg; revisar si es un piso impuesto por la calibración.
+- Módulos iPSC y dECM: sus veredictos contradicen sus propios datos.
+- web_app/ sigue calculando métricas de O2, de flujo urinario y el
+  porcentaje de TFG nativa.
+- Simuladores de filtración glomerular: comparaciones con el riñón nativo
+  en código activo.
+
+Lecciones de proceso:
+- Un proceso automatizado ejecutó 15 movimientos de archivos (ctime
+  11:14:08, en ~150 ms) antes de la ejecución manual, pese a reportes de
+  "no ejecutado". Origen pendiente de confirmar. Regla: mientras se ejecuta
+  en terminal, el agente no recibe instrucciones, y se comprueba que el
+  índice esté vacío (git diff --cached) antes de cada commit.
+- Un mensaje de commit afirmó una verificación antes de ejecutarla (la
+  primera corrida falló por el entorno); se confirmó después. Regla:
+  verificar, leer la salida, y solo entonces redactar.
