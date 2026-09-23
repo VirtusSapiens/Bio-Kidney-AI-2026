@@ -10,6 +10,7 @@
 > anteriores al 2026-08-22 pueden contener cifras y encuadres retirados; las
 > líneas con TFG decimal identificadas en la auditoría del 2026-09-21 llevan
 > el marcador [RETIRADO: ver MAESTRO §0].
+
 ---
 
 ## ENTRADA 001 — Enero 2026
