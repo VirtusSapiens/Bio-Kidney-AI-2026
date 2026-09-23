@@ -21,3 +21,9 @@ capa3b_venoso_v1_*.npz
 capa3b_venoso_wrep*.npz
 capa*_auditoria_*.npz
 capa*_auditoria_*.txt
+*.blend1
+
+# El archivo historico solo recibe ficheros movidos con git mv desde rutas
+# activas. Lo untracked que viva aqui (material contaminado que nunca fue
+# publico) no debe entrar al repo por un git add de directorio.
+99_archivo/
